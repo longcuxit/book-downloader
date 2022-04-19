@@ -1,9 +1,6 @@
-import { useMemo } from "react";
-
 import List from "@mui/material/List";
 
 import { Book, BookProps } from "./Book";
-import { Chapter } from "./Chapter";
 
 export interface BookListProps extends BookProps {
   split: number;

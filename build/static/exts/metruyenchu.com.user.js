@@ -50,7 +50,10 @@
   const script = document.createElement("script");
   script.src =
     "https://longcuxit.github.io/book-downloader/build/static/js/main.js";
+
+  // script.src = "http://localhost:3000/static/js/bundle.js";
   document.head.appendChild(script);
+
   script.onload = function () {
     var container = document.createElement("li");
     container.className = "mr-3 w-150";
@@ -62,6 +65,7 @@
       author: getText(".media-body .list-unstyled.mb-4 li"),
       publisher: getText("#nav-intro .bg-yellow-white .h4"),
       description: getText("#nav-intro .content"),
+      cover: query(".page-content .nh-thumb img").src,
       tags: queryAll(".media-body .list-unstyled.mb-4 li").map(function (li) {
         return li.innerText.trim();
       }),

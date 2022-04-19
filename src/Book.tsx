@@ -1,17 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { saveAs } from "file-saver";
 
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  IconButton,
-  ListItem,
-  ListItemText,
-  Typography,
-} from "@mui/material";
+import { Box, IconButton, ListItem, ListItemText } from "@mui/material";
 
 import LinearProgress from "@mui/material/LinearProgress";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -25,10 +16,11 @@ import { Chapter, ChapterStatus, useChaptersStat } from "./Chapter";
 import { downloader } from "./Downloader";
 
 export interface BookProps extends jEpubInitProps {
+  cover?: string;
   chapters: Chapter[];
 }
 
-export const Book = ({ title, chapters, ...props }: BookProps) => {
+export const Book = ({ title, chapters, cover, ...props }: BookProps) => {
   const [chapterStat, composed] = useChaptersStat(chapters);
 
   const [saving, setSaving] = useState(false);
@@ -45,6 +37,12 @@ export const Book = ({ title, chapters, ...props }: BookProps) => {
     });
 
     try {
+      if (cover) {
+        const buffer = await fetch(cover).then((result) =>
+          result.arrayBuffer()
+        );
+        epub.cover(buffer);
+      }
       const epubZipContent = await epub.generate();
       console.log("created");
       saveAs(epubZipContent, `${title}.epub`);

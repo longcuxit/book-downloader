@@ -3,7 +3,6 @@ import "./App.css";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Paper from "@mui/material/Paper";
 import Container from "@mui/material/Container";
@@ -60,6 +59,27 @@ const DownloadAll = ({
   );
 };
 
+function getImage(src: string) {
+  return new Promise<string | undefined>((next) => {
+    var img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d")!;
+      canvas.height = img.naturalHeight;
+      canvas.width = img.naturalWidth;
+      ctx.drawImage(img, 0, 0);
+      next(canvas.toDataURL());
+    };
+    const empty =
+      "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+    img.onerror = () => {
+      next(empty);
+    };
+    img.src = src;
+  });
+}
+
 function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
   const [open, setOpen] = React.useState(false);
   const handleClose = () => setOpen(false);
@@ -69,11 +89,13 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
 
   useEffect(() => {
     if (!open || props) return;
-    fetchData().then((data) => {
+    fetchData().then(async (data) => {
       console.log(data);
       if (!data.chapters.length) return;
+      console.log(data.cover);
       setProps({
         ...data,
+        cover: await getImage(data.cover),
         chapters: data.chapters.map(
           (chap) => new Chapter(chap.title, chap.url, formatContent)
         ),

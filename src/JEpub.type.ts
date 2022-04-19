@@ -10,6 +10,7 @@ declare global {
   interface BookDownloaderProps {
     fetchData(): Promise<
       jEpubInitProps & {
+        cover: string;
         chapters: { title: string; url: string }[];
       }
     >;
