@@ -48,7 +48,8 @@
 
   if (!query("#suggest-book")) return;
   const script = document.createElement("script");
-  script.src = "http://localhost:3000/static/js/bundle.js";
+  script.src =
+    "https://longcuxit.github.io/book-downloader/build/static/js/main.js";
   document.head.appendChild(script);
   script.onload = function () {
     var container = document.createElement("li");
