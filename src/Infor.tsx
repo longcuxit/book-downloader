@@ -109,7 +109,7 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
               )}
             </>
           )}
-          <Typography variant="subtitle2">
+          <Typography variant="subtitle2" padding={2}>
             {isDragActive ? "Drop here ..." : "Drag, drop or click here ..."}
           </Typography>
 

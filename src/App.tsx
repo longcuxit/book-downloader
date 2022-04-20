@@ -82,7 +82,12 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
               <BookList {...props} image={image} />
             </Container>
           ) : (
-            <Box display="flex" justifyContent="center">
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height={300}
+            >
               <CircularProgress />
             </Box>
           )}
