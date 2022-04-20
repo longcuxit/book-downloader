@@ -124,6 +124,7 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
               if (e.ctrlKey || e.metaKey) return;
               e.preventDefault();
             }}
+            onPaste={({ target }: any) => target.blur()}
             style={{ opacity: "0" }}
           />
         </Box>
