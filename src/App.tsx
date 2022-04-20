@@ -54,7 +54,8 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
         sx={{ pointerEvents: "none" }}
       >
         <Paper
-          style={{
+          elevation={3}
+          sx={{
             pointerEvents: "auto",
             position: "absolute" as "absolute",
             top: "50%",

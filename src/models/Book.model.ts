@@ -92,9 +92,7 @@ export class BookModel extends EventEmitter {
         );
         epub.cover(buffer);
       }
-      const epubZipContent = await epub.generate();
-      console.log("created");
-      saveAs(epubZipContent, `${info.title}.epub`);
+      saveAs(await epub.generate(), `${info.title}.epub`);
       await _.delay(500);
     } catch (_) {}
 
