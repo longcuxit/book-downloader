@@ -39,4 +39,14 @@ export const _ = {
   },
   emptyImage:
     "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
+
+  async waitFor(condition: () => any, time = 500) {
+    const check = async (): Promise<any> => {
+      const result = await Promise.resolve(condition());
+      if (result) return result;
+      await new Promise((next) => setTimeout(next, time));
+      return check();
+    };
+    return check();
+  },
 };

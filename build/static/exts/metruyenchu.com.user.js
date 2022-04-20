@@ -69,25 +69,21 @@
 
     bookDownloaderRegister(container, {
       fetchData: function () {
-        return new Promise(function (next) {
-          function getChapters() {
-            var chapters = _.queryAll("#chapter-list .nh-section a").map(
-              function (aTag) {
-                return {
-                  title: _.query(
-                    ".text-overflow-1-lines",
-                    aTag
-                  ).firstChild.textContent.trim(),
-                  url: aTag.href,
-                };
-              }
-            );
-
-            Object.assign(info, { chapters: chapters });
-            if (chapters.length) next(info);
-            else setTimeout(getChapters, 500);
-          }
-          getChapters();
+        return _.waitFor(function () {
+          var chapters = _.queryAll("#chapter-list .nh-section a").map(
+            function (aTag) {
+              return {
+                title: _.query(
+                  ".text-overflow-1-lines",
+                  aTag
+                ).firstChild.textContent.trim(),
+                url: aTag.href,
+              };
+            }
+          );
+          if (chapters.length) return chapters;
+        }).then(function (chapters) {
+          return Object.assign(info, { chapters: chapters });
         });
       },
       formatContent: function (content) {

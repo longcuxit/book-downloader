@@ -67,7 +67,7 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
   const [props, setProps] = useState<BookProps>();
-  const [config, setConfig] = useState({ skip: 0, split: 0 });
+  const [config, setConfig] = useState({ skip: 0, split: 1000 });
   const [image, setImage] = useState<string>();
 
   useEffect(() => {
@@ -149,7 +149,7 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
                     size="small"
                     type="number"
                     fullWidth
-                    defaultValue={config.skip}
+                    defaultValue={config.split}
                     onBlur={({ target }) => {
                       setConfig({ ...config, split: +target.value });
                     }}
