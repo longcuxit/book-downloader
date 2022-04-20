@@ -64,6 +64,34 @@ export const _ = {
       timeOut = setTimeout(() => call.apply(null, args), time);
     }) as any as T;
   },
+
+  cleanHTML(
+    html: string,
+    custom: Record<string, (match: string) => string> = {},
+    ignore: string[] = []
+  ) {
+    const ignoreTags = ignore.flatMap((name) => {
+      return [`<${name} `, `</${name}>`];
+    });
+
+    const customEntries = Object.entries(custom).map(([name, call]) => {
+      ignoreTags.push(`</${name}>`);
+      return [`<${name} `, call] as [string, (match: string) => string];
+    });
+
+    html = html.replaceAll(/<[^>]*>/g, (match) => {
+      const lowerCase = match.toLocaleLowerCase();
+      const custom = customEntries.find((entry) => match.startsWith(entry[0]));
+      if (custom) return custom[1](match);
+      if (ignoreTags.find((tag) => lowerCase.startsWith(tag))) {
+        return match;
+      }
+      return "<br/>";
+    });
+    html = html.replaceAll(/> +</g, "><");
+    html = html.replaceAll(/(<br\/>)+/g, "<br/><br/>");
+    return html;
+  },
 };
 
 export const useEventEmitter = (emitter: EventEmitter, types: string) => {

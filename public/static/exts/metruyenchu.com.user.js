@@ -90,9 +90,7 @@
         var div = document.createElement("div");
         div.innerHTML = content;
         div = _.query("#js-read__content", div);
-        Array.from(div.children).forEach(function (el) {
-          if (el.tagName === "DIV") el.remove();
-        });
+        _.queryAll(".pt-3.text-center", div).forEach((div) => div.remove());
         return "<div>" + div.innerHTML + "</div>";
       },
     });

@@ -1,4 +1,5 @@
 import EventEmitter from "events";
+import { _ } from "../helper";
 
 export enum ChapterStatus {
   idle = "idle",
@@ -11,6 +12,20 @@ export enum ChapterStatus {
 export type ChapterStatusChange = {
   from: ChapterStatus;
   to: ChapterStatus;
+};
+
+const fakeEl = document.createElement("div");
+
+const formatTags: Record<string, (match: string) => string> = {
+  a: (match) => {
+    fakeEl.innerHTML = match + "</a>";
+    return `<a href="${fakeEl.querySelector("a")!.href}">`;
+  },
+  img: (match) => {
+    fakeEl.innerHTML = match + "</a>";
+    const src = fakeEl.querySelector("img")!.src;
+    return `<a href="${src}">${src}</a>`;
+  },
 };
 
 export class ChapterModel extends EventEmitter {
@@ -39,8 +54,9 @@ export class ChapterModel extends EventEmitter {
     try {
       this.status = ChapterStatus.loading;
 
-      const content = await fetch(this.url).then((res) => res.text());
-      this.content = this.format(content);
+      let content = await fetch(this.url).then((res) => res.text());
+      content = await Promise.resolve(this.format(content));
+      this.content = _.cleanHTML(content, formatTags, ["br"]);
       this.status = ChapterStatus.success;
     } catch (_) {
       if (!retry) {
