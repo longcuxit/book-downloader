@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import BookDownloader from "./App";
+import { _ } from "./helper";
 
 const libs = [
   "https://unpkg.com/jszip@3.2.0/dist/jszip.min.js",
@@ -13,8 +14,10 @@ libs.forEach((src) => {
   script.src = src;
   document.head.appendChild(script);
 });
-
-window.bookDownloaderRegister = (container, props) => {
+const register = (container: any, props: any) => {
   const root = ReactDOM.createRoot(container);
   root.render(<BookDownloader {...props} />);
 };
+
+(register as any)._ = _;
+window.bookDownloaderRegister = register;
