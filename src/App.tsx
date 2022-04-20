@@ -12,7 +12,6 @@ import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import DownloadIcon from "@mui/icons-material/Download";
-import KeyboardDoubleArrowDownIconIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import PauseIcon from "@mui/icons-material/Pause";
 import ReplayIcon from "@mui/icons-material/Replay";
 import CloseIcon from "@mui/icons-material/Close";
@@ -24,11 +23,6 @@ import { BookProps } from "./Book";
 import { Infor } from "./Infor";
 import { _ } from "./helper";
 
-const duplicateStyle = {
-  color: "#000",
-  filter: "drop-shadow(#000 3px -3px 0px)",
-};
-
 const DownloadAll = ({
   chapters,
   skip,
@@ -39,7 +33,18 @@ const DownloadAll = ({
   chapters = useMemo(() => chapters.slice(skip), [chapters, skip]);
   const [chapterStat, composed] = useChaptersStat(chapters);
   return (
-    <IconButton
+    <Button
+      fullWidth
+      variant="contained"
+      startIcon={
+        composed.running ? (
+          <PauseIcon />
+        ) : composed.progress ? (
+          <ReplayIcon />
+        ) : (
+          <DownloadIcon />
+        )
+      }
       disabled={
         composed.progress === 100 ||
         (!!composed.running && !chapterStat[ChapterStatus.waiting])
@@ -51,16 +56,9 @@ const DownloadAll = ({
           downloader.add(chapters);
         }
       }}
-      style={{ textShadow: "2px 2px 4px #000000" }}
     >
-      {composed.running ? (
-        <PauseIcon style={duplicateStyle} />
-      ) : composed.progress ? (
-        <ReplayIcon style={duplicateStyle} />
-      ) : (
-        <KeyboardDoubleArrowDownIconIcon />
-      )}
-    </IconButton>
+      All
+    </Button>
   );
 };
 
@@ -125,7 +123,12 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
           </IconButton>
           {props ? (
             <Container>
-              <Infor {...props} onImage={setImage} image={image} />
+              <Infor
+                {...props}
+                cover={image ?? props.cover}
+                onImage={setImage}
+                image={image}
+              />
               <hr />
               <Grid container spacing={1}>
                 <Grid item xs={4}>
@@ -159,7 +162,7 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
               </Grid>
               <BookList
                 {...props}
-                cover={props.cover ?? image}
+                cover={image ?? props.cover}
                 skip={config.skip || 0}
                 split={config.split || props.chapters.length}
               />
