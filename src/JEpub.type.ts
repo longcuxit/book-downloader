@@ -8,12 +8,10 @@ declare global {
     tags?: string[];
   }
   interface BookDownloaderProps {
-    fetchData(): Promise<
-      jEpubInitProps & {
-        cover: string;
-        chapters: { title: string; url: string }[];
-      }
-    >;
+    fetchData(): Promise<{
+      info: jEpubInitProps & { cover: string };
+      chapters: { title: string; url: string }[];
+    }>;
 
     formatContent(content: string): string;
   }

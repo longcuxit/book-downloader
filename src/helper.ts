@@ -1,3 +1,6 @@
+import EventEmitter from "events";
+import { useEffect, useState } from "react";
+
 export const _ = {
   query(selector: string, from: HTMLElement | Document = document) {
     return from.querySelector(selector) as HTMLElement | undefined;
@@ -44,9 +47,46 @@ export const _ = {
     const check = async (): Promise<any> => {
       const result = await Promise.resolve(condition());
       if (result) return result;
-      await new Promise((next) => setTimeout(next, time));
+      await _.delay(time);
       return check();
     };
     return check();
   },
+
+  delay<T = undefined>(time = 0, value?: T) {
+    return new Promise<T>((next) => setTimeout(() => next(value as T), time));
+  },
+
+  debounce<T extends Function>(call: T, time = 10) {
+    let timeOut: NodeJS.Timeout;
+    return ((...args: any[]) => {
+      clearTimeout(timeOut);
+      timeOut = setTimeout(() => call.apply(null, args), time);
+    }) as any as T;
+  },
+};
+
+export const useEventEmitter = (emitter: EventEmitter, types: string) => {
+  const [value, forceUpdate] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    const names = types.split(",");
+    const handles: Record<string, (v: any) => void> = {};
+    names.forEach((name) => {
+      handles[name] = _.debounce((value: any) => {
+        forceUpdate((old) => {
+          return { ...old, [name]: value };
+        });
+      });
+
+      emitter.on(name, handles[name]);
+    });
+
+    return () => {
+      names.forEach((name) => {
+        emitter.off(name, handles[name]);
+      });
+    };
+  }, [emitter, types]);
+  return value;
 };

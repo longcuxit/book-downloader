@@ -8,17 +8,16 @@ import Box from "@mui/material/Box";
 
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
 
-import { BookProps } from "./Book";
 import { _ } from "./helper";
+import { BookInfo } from "./models/Book.model";
 
-export const Infor = ({
-  cover,
-  title,
-  tags,
-  description,
-  image,
-  onImage,
-}: BookProps & { onImage(data?: string): void; image?: string }) => {
+export interface InfoProps {
+  info: BookInfo;
+  onImage(data?: string): void;
+  image?: string;
+}
+
+export const Info = ({ info, image, onImage }: InfoProps) => {
   const onDrop = useCallback(
     ([file]: File[]) => {
       if (!file) return;
@@ -51,14 +50,14 @@ export const Infor = ({
     accept: "image/*",
   });
 
-  cover = image ?? cover;
+  const cover = image ?? info.cover;
 
   return (
     <Grid container spacing={1}>
       <Grid item>
         <Box
-          width={100}
-          height={130}
+          width={150}
+          height={200}
           bgcolor="#ccc"
           display="flex"
           alignItems="center"
@@ -102,6 +101,7 @@ export const Infor = ({
                     zIndex: 1,
                     opacity: 0.7,
                   }}
+                  color="error"
                   onClick={() => onImage()}
                 >
                   Delete
@@ -136,15 +136,15 @@ export const Infor = ({
             position="absolute"
             style={{ inset: 0 }}
           >
-            <Typography variant="h6">{title}</Typography>
+            <Typography variant="h6">{info.title}</Typography>
             <Box overflow="auto">
-              {tags?.map((tag, i) => (
+              {info.tags?.map((tag, i) => (
                 <Typography key={i} variant="subtitle2">
                   {tag}
                 </Typography>
               ))}
               <hr />
-              <Typography variant="caption">{description}</Typography>
+              <Typography variant="caption">{info.description}</Typography>
             </Box>
           </Box>
         </Box>

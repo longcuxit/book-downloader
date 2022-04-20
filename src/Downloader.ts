@@ -1,10 +1,10 @@
 import EventEmitter from "events";
-import { Chapter, ChapterStatus } from "./Chapter";
+import { ChapterModel, ChapterStatus } from "./models/Chapter.model";
 
 const maxLoading = 6;
 
 class Downloader extends EventEmitter {
-  schedules: Chapter[] = [];
+  schedules: ChapterModel[] = [];
   loading = 0;
 
   private progress() {
@@ -19,7 +19,7 @@ class Downloader extends EventEmitter {
     this.progress();
   }
 
-  add(chapters: Chapter[]) {
+  add(chapters: ChapterModel[]) {
     chapters.forEach((chapter) => {
       if (
         chapter.status === ChapterStatus.idle ||
@@ -33,7 +33,7 @@ class Downloader extends EventEmitter {
     this.progress();
   }
 
-  remove(chapters: Chapter[]) {
+  remove(chapters: ChapterModel[]) {
     this.schedules = this.schedules.filter((chapter) => {
       if (chapters.includes(chapter)) {
         if (chapter.status === ChapterStatus.waiting) {

@@ -1,7 +1,3 @@
-import { useState } from "react";
-
-import { saveAs } from "file-saver";
-
 import LinearProgress from "@mui/material/LinearProgress";
 import CircularProgress from "@mui/material/CircularProgress";
 import ListItemText from "@mui/material/ListItemText";
@@ -14,60 +10,26 @@ import SaveIcon from "@mui/icons-material/Save";
 import PauseIcon from "@mui/icons-material/Pause";
 import ReplayIcon from "@mui/icons-material/Replay";
 
-import { Chapter, ChapterStatus, useChaptersStat } from "./Chapter";
-import { downloader } from "./Downloader";
+import { BookModel } from "./models/Book.model";
+import { useEventEmitter } from "./helper";
 
-export interface BookProps extends jEpubInitProps {
-  cover?: string;
-  chapters: Chapter[];
+export interface BookProps {
+  book: BookModel;
 }
 
-export const Book = ({ title, chapters, cover, ...props }: BookProps) => {
-  const [chapterStat, composed] = useChaptersStat(chapters);
+export const Book = ({ book }: BookProps) => {
+  const { stat, composed, info } = book;
 
-  const [saving, setSaving] = useState(false);
-
-  const saveBook = async () => {
-    setSaving(true);
-    const epub = new jEpub().init({
-      title,
-      ...props,
-    });
-
-    chapters.forEach((chapter) => {
-      epub.add(chapter.title, chapter.content);
-    });
-
-    try {
-      if (cover) {
-        const buffer = await fetch(cover).then((result) =>
-          result.arrayBuffer()
-        );
-        epub.cover(buffer);
-      }
-      const epubZipContent = await epub.generate();
-      console.log("created");
-      saveAs(epubZipContent, `${title}.epub`);
-      await new Promise((next) => setTimeout(next, 1000));
-    } catch (_) {}
-
-    setSaving(false);
-  };
+  const { saving } = useEventEmitter(book, "stat,saving");
 
   return (
     <ListItem disableGutters>
-      <ListItemText primary={title} />
+      <ListItemText primary={info.title} />
       <IconButton
         aria-label="Download"
         hidden={composed.progress === 100}
-        disabled={!!composed.running && !chapterStat[ChapterStatus.waiting]}
-        onClick={() => {
-          if (composed.running) {
-            downloader.remove(chapters);
-          } else {
-            downloader.add(chapters);
-          }
-        }}
+        disabled={!!composed.running && !stat.waiting}
+        onClick={book.toggleDownload}
       >
         {composed.running ? (
           <PauseIcon color="error" />
@@ -81,7 +43,7 @@ export const Book = ({ title, chapters, cover, ...props }: BookProps) => {
               right="68%"
               fontSize={10}
             >
-              {chapterStat[ChapterStatus.error]}
+              {stat.error}
             </Box>
           </>
         ) : (
@@ -89,12 +51,10 @@ export const Book = ({ title, chapters, cover, ...props }: BookProps) => {
         )}
       </IconButton>
       <IconButton
-        disabled={
-          !chapterStat[ChapterStatus.success] || !!composed.running || saving
-        }
-        color={chapterStat[ChapterStatus.error] ? "warning" : "success"}
+        disabled={!stat.success || !!composed.running || saving}
+        color={stat.error ? "warning" : "success"}
         aria-label="Save"
-        onClick={saveBook}
+        onClick={() => book.save()}
       >
         {saving ? <CircularProgress size={20} /> : <SaveIcon />}
       </IconButton>

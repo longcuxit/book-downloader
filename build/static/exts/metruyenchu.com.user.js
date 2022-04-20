@@ -83,18 +83,16 @@
           );
           if (chapters.length) return chapters;
         }).then(function (chapters) {
-          return Object.assign(info, { chapters: chapters });
+          return { info: info, chapters: chapters };
         });
       },
       formatContent: function (content) {
         var div = document.createElement("div");
         div.innerHTML = content;
         div = _.query("#js-read__content", div);
-
         Array.from(div.children).forEach(function (el) {
           if (el.tagName === "DIV") el.remove();
         });
-
         return "<div>" + div.innerHTML + "</div>";
       },
     });
