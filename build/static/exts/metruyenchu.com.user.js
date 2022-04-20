@@ -70,19 +70,24 @@
     bookDownloaderRegister(container, {
       fetchData: function () {
         return new Promise(function (next) {
-          var chapters = _.queryAll("#chapter-list .nh-section a").map(
-            function (aTag) {
-              return {
-                title: _.query(
-                  ".text-overflow-1-lines",
-                  aTag
-                ).firstChild.textContent.trim(),
-                url: aTag.href,
-              };
-            }
-          );
+          function getChapters() {
+            var chapters = _.queryAll("#chapter-list .nh-section a").map(
+              function (aTag) {
+                return {
+                  title: _.query(
+                    ".text-overflow-1-lines",
+                    aTag
+                  ).firstChild.textContent.trim(),
+                  url: aTag.href,
+                };
+              }
+            );
 
-          next(Object.assign(info, { chapters: chapters }));
+            Object.assign(info, { chapters: chapters });
+            if (chapters.length) next(info);
+            else setTimeout(getChapters, 500);
+          }
+          getChapters();
         });
       },
       formatContent: function (content) {
