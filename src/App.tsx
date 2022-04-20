@@ -47,16 +47,13 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
       </IconButton>
       <Modal
         open={open}
-        hideBackdrop
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
-        sx={{ pointerEvents: "none" }}
       >
         <Paper
           elevation={3}
           sx={{
-            pointerEvents: "auto",
             position: "absolute" as "absolute",
             top: "50%",
             left: "50%",
