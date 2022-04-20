@@ -1,5 +1,4 @@
 import EventEmitter from "events";
-import { _ } from "../helper";
 
 export enum ChapterStatus {
   idle = "idle",

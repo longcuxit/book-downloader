@@ -1,15 +1,21 @@
-import EventEmitter from "events";
 import { ChapterModel, ChapterStatus } from "./models/Chapter.model";
 
 const maxLoading = 6;
-
-class Downloader extends EventEmitter {
+class Downloader {
   schedules: ChapterModel[] = [];
   loading = 0;
+  private wakeLock?: any;
 
-  private progress() {
-    if (!this.schedules.length) return;
+  private async progress() {
+    if (!this.schedules.length) {
+      await this.wakeLock?.release();
+      delete this.wakeLock;
+      return;
+    }
     if (this.loading >= maxLoading) return;
+    if ("wakeLock" in navigator && !this.wakeLock) {
+      this.wakeLock = await (navigator as any).wakeLock.request("screen");
+    }
     this.loading++;
     const step = this.schedules.shift()!;
     step.download(3).then(() => {
@@ -20,6 +26,11 @@ class Downloader extends EventEmitter {
   }
 
   add(chapters: ChapterModel[]) {
+    if (!window.onbeforeunload) {
+      window.onbeforeunload = function () {
+        return "Are you sure cancel all download!...";
+      };
+    }
     chapters.forEach((chapter) => {
       if (
         chapter.status === ChapterStatus.idle ||

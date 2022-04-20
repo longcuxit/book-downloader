@@ -138,7 +138,6 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
           display="flex"
           alignItems="center"
           justifyContent="end"
-          spacing={2}
         >
           <AllButtons books={books} />
         </Grid>
