@@ -36,53 +36,98 @@
   "use strict";
 
   if (!document.querySelector("#suggest-book")) return;
+  var isMobile = document.querySelector("#appMobile");
   const script = document.createElement("script");
-  script.src =
-    "https://longcuxit.github.io/book-downloader/build/static/js/main.js";
 
-  // script.src = "http://localhost:3000/static/js/bundle.js";
+  // script.src =
+  //   "https://longcuxit.github.io/book-downloader/build/static/js/main.js";
+
+  script.src = "http://localhost:3000/static/js/bundle.js";
   document.head.appendChild(script);
 
   script.onload = function () {
     var _ = bookDownloaderRegister._;
-    var container = document.createElement("li");
+    var container = document.createElement("div");
     container.className = "mr-3 w-150";
     _.query("#suggest-book").after(container);
 
-    var info = {
-      i18n: "en",
-      title: _.getText(".media-body h1"),
-      author: _.getText(".media-body .list-unstyled.mb-4 li"),
-      publisher: _.getText("#nav-intro .bg-yellow-white .h4"),
-      description: _.getText("#nav-intro .content"),
-      cover: _.getAttr(".page-content .nh-thumb img", "src"),
-      tags: _.queryAll(".media-body ul.list-unstyled.mb-4").map(function (ul) {
-        return _.queryAll("li", ul)
-          .map(function (li) {
-            return li.innerText.trim();
-          })
-          .join(", ");
-      }),
+    var textSelectors = {
+      title: ".media-body h1",
+      author: "a[href*=tac-gia]",
+      publisher: "#nav-intro .bg-yellow-white .h4",
+      description: "#nav-intro .content",
     };
 
-    _.query("#nav-tab-chap").click();
+    var selectors = {
+      cover: ".page-content .nh-thumb img",
+      tags: _.queryAll(".media-body ul.list-unstyled.mb-4"),
+      chapters: "#chapter-list .nh-section a.media",
+    };
+
+    if (isMobile) {
+      container.className = "col-12";
+      textSelectors.title = ".nh-section h1.h6";
+      selectors.tags = _.queryAll("ul.list-unstyled", _.query(".nh-section"));
+      selectors.chapters = "#chapterList a.media";
+    }
 
     bookDownloaderRegister(container, {
       fetchData: function () {
-        return _.waitFor(function () {
-          var chapters = _.queryAll("#chapter-list .nh-section a").map(
-            function (aTag) {
-              return {
-                title: _.query(
-                  ".text-overflow-1-lines",
-                  aTag
-                ).firstChild.textContent.trim(),
-                url: aTag.href,
-              };
-            }
-          );
+        var info = {
+          i18n: "vi",
+          cover: _.getAttr(selectors.cover, "src"),
+          tags: selectors.tags.map(function (ul) {
+            return _.tagsFromElements(_.queryAll("li", ul));
+          }),
+        };
+
+        Object.entries(textSelectors).forEach(function (entry) {
+          info[entry[0]] = _.getText(entry[1]);
+        });
+
+        var getChapters = function () {
+          var chapters = _.queryAll(selectors.chapters).map(function (aTag) {
+            return {
+              title: _.query(
+                ".text-overflow-1-lines",
+                aTag
+              ).firstChild.textContent.trim(),
+              url: aTag.href,
+            };
+          });
           if (chapters.length) return chapters;
-        }).then(function (chapters) {
+        };
+
+        if (isMobile) {
+          EventBus.$emit("chapterList", {});
+
+          getChapters = ((query) => {
+            return function () {
+              var chapters = query();
+              if (!chapters) return;
+              var li = _.query(".pagination li:last-child");
+              if (!li) return chapters;
+              var btn = li.firstElementChild;
+
+              return _.asyncReduce(
+                function () {
+                  if (li.className.includes("disabled")) return;
+                  btn.click();
+                  return _.delay().then(query);
+                },
+                function (chapters, current) {
+                  return chapters.concat(current);
+                },
+                chapters
+              );
+            };
+          })(getChapters);
+        } else {
+          _.query("#nav-tab-chap").click();
+        }
+
+        console.log(info);
+        return _.waitFor(getChapters).then(function (chapters) {
           return { info: info, chapters: chapters };
         });
       },

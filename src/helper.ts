@@ -43,14 +43,26 @@ export const _ = {
   emptyImage:
     "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
 
-  async waitFor(condition: () => any, time = 500) {
+  async waitFor(getter: () => any, time = 500) {
     const check = async (): Promise<any> => {
-      const result = await Promise.resolve(condition());
+      const result = await Promise.resolve(getter());
       if (result) return result;
       await _.delay(time);
       return check();
     };
     return check();
+  },
+
+  async asyncReduce<T, V>(
+    getter: () => V | undefined,
+    next: (old: T, value: V) => T,
+    from: T
+  ) {
+    while (true) {
+      const value = await Promise.resolve(getter());
+      if (value === undefined) return from;
+      from = await Promise.resolve(next(from, value));
+    }
   },
 
   delay<T = undefined>(time = 0, value?: T) {
@@ -63,6 +75,18 @@ export const _ = {
       clearTimeout(timeOut);
       timeOut = setTimeout(() => call.apply(null, args), time);
     }) as any as T;
+  },
+  tagsFromElements(els: HTMLElement[]) {
+    return els
+      .map(function (el) {
+        var text = el.innerText.trim();
+        const link = el.tagName === "A" ? el : (_.query("a", el) as any);
+        if (link) {
+          text = '<a href="' + link.href + '">' + text + "</a>";
+        }
+        return text;
+      })
+      .join(", ");
   },
 
   cleanHTML(

@@ -79,7 +79,13 @@ export class BookModel extends EventEmitter {
     if (!this.stat.success) return;
     this.emit("saving", true);
     const { cover, ...info } = this.info;
-    const epub = new jEpub().init(info);
+    const { href } = window.location;
+    const tags = [`<a href="${href}">${href}</a>`, ...(info.tags ?? [])];
+    const epub = new jEpub().init({
+      ...info,
+      tags: [tags.join("<br/>")],
+      description: `<br/>${info.description}`,
+    });
 
     this.chapters.forEach((chapter) => {
       epub.add(chapter.title, chapter.content);

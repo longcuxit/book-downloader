@@ -140,9 +140,7 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
             <Typography variant="h6">{info.title}</Typography>
             <Box overflow="auto">
               {info.tags?.map((tag, i) => (
-                <Typography key={i} variant="subtitle2">
-                  {tag}
-                </Typography>
+                <div key={i} dangerouslySetInnerHTML={{ __html: tag }} />
               ))}
               <hr />
               <Typography variant="caption">{info.description}</Typography>

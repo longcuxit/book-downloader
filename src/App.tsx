@@ -27,7 +27,6 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
   useEffect(() => {
     if (!open || props) return;
     fetchData().then(async ({ info, chapters }) => {
-      console.log(info, chapters);
       if (!chapters.length) return;
       const cover = await _.getImage(info.cover);
 
@@ -58,9 +57,9 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            maxWidth: 600,
-            width: "90%",
-            maxHeight: "90%",
+            maxWidth: "100%",
+            width: 600,
+            maxHeight: "100%",
             padding: "16px 0",
             overflow: "auto",
           }}
