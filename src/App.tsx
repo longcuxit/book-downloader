@@ -58,6 +58,7 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
             transform: "translate(-50%, -50%)",
             maxWidth: "100%",
             width: 600,
+            height: { xs: "100%", md: "auto" },
             maxHeight: "100%",
             padding: "16px 0",
             overflow: "auto",
@@ -80,7 +81,8 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
               display="flex"
               justifyContent="center"
               alignItems="center"
-              height={300}
+              height="100%"
+              minHeight={300}
             >
               <CircularProgress />
             </Box>
