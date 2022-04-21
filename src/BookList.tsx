@@ -5,6 +5,9 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
+import Divider from "@mui/material/Divider";
 
 import DownloadIcon from "@mui/icons-material/Download";
 import PauseIcon from "@mui/icons-material/Pause";
@@ -107,48 +110,62 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
 
   return (
     <>
-      <Grid container spacing={1}>
-        <Grid item xs={4} sm={3}>
-          <TextField
-            label="Skip chapters"
-            size="small"
-            type="number"
-            fullWidth
-            defaultValue={config.skip}
-            onBlur={({ target }) => {
-              setConfig({ ...config, skip: +target.value });
-            }}
-          />
-        </Grid>
-        <Grid item xs={4} sm={3}>
-          <TextField
-            label="Split chapters"
-            size="small"
-            type="number"
-            fullWidth
-            defaultValue={config.split}
-            onBlur={({ target }) => {
-              setConfig({ ...config, split: +target.value });
-            }}
-          />
-        </Grid>
+      <Divider sx={{ marginY: 1 }} />
+      <Box
+        component={Paper}
+        square
+        position="sticky"
+        zIndex={1}
+        top={0}
+        sx={{ paddingY: 1 }}
+      >
+        <Container>
+          <Grid container spacing={1}>
+            <Grid item xs={4} sm={3}>
+              <TextField
+                label="Skip chapters"
+                size="small"
+                type="number"
+                fullWidth
+                defaultValue={config.skip}
+                onBlur={({ target }) => {
+                  setConfig({ ...config, skip: +target.value });
+                }}
+              />
+            </Grid>
+            <Grid item xs={4} sm={3}>
+              <TextField
+                label="Split chapters"
+                size="small"
+                type="number"
+                fullWidth
+                defaultValue={config.split}
+                onBlur={({ target }) => {
+                  setConfig({ ...config, split: +target.value });
+                }}
+              />
+            </Grid>
 
-        <Grid
-          item
-          xs={4}
-          sm={6}
-          display="flex"
-          alignItems="center"
-          justifyContent="end"
-        >
-          <AllButtons books={books} />
-        </Grid>
-      </Grid>
-      <List sx={{ width: "100%" }}>
-        {books.map((book, i) => (
-          <Book key={i} book={book} />
-        ))}
-      </List>
+            <Grid
+              item
+              xs={4}
+              sm={6}
+              display="flex"
+              alignItems="center"
+              justifyContent="end"
+            >
+              <AllButtons books={books} />
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+      <Container>
+        <List sx={{ width: "100%" }}>
+          {books.map((book, i) => (
+            <Book key={i} book={book} />
+          ))}
+        </List>
+      </Container>
     </>
   );
 };

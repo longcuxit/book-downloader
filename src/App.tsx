@@ -4,10 +4,8 @@ import "./App.css";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Paper from "@mui/material/Paper";
-import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
-import Divider from "@mui/material/Divider";
 
 import DownloadIcon from "@mui/icons-material/Download";
 import CloseIcon from "@mui/icons-material/Close";
@@ -60,7 +58,7 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
             transform: "translate(-50%, -50%)",
             maxWidth: "100%",
             width: 600,
-            maxHeight: "calc(100% - 35px)",
+            maxHeight: "100%",
             padding: "16px 0",
             overflow: "auto",
           }}
@@ -73,11 +71,10 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
             <CloseIcon />
           </IconButton>
           {props ? (
-            <Container>
+            <>
               <Info info={props.info} onImage={setImage} image={image} />
-              <Divider sx={{ marginY: 2 }} />
               <BookList {...props} image={image} />
-            </Container>
+            </>
           ) : (
             <Box
               display="flex"
