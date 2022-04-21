@@ -7,6 +7,7 @@ import Paper from "@mui/material/Paper";
 import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
+import Divider from "@mui/material/Divider";
 
 import DownloadIcon from "@mui/icons-material/Download";
 import CloseIcon from "@mui/icons-material/Close";
@@ -59,7 +60,7 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
             transform: "translate(-50%, -50%)",
             maxWidth: "100%",
             width: 600,
-            maxHeight: "100%",
+            maxHeight: "calc(100% - 35px)",
             padding: "16px 0",
             overflow: "auto",
           }}
@@ -74,7 +75,7 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
           {props ? (
             <Container>
               <Info info={props.info} onImage={setImage} image={image} />
-              <hr />
+              <Divider sx={{ marginY: 2 }} />
               <BookList {...props} image={image} />
             </Container>
           ) : (

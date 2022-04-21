@@ -31,29 +31,34 @@ class Downloader {
         return "Are you sure cancel all download!...";
       };
     }
-    chapters.forEach((chapter) => {
-      if (
+    const willAdd = chapters.filter((chapter) => {
+      return Boolean(
         chapter.status === ChapterStatus.idle ||
-        chapter.status === ChapterStatus.error
-      ) {
-        chapter.status = ChapterStatus.waiting;
-        this.schedules.push(chapter);
-      }
+          chapter.status === ChapterStatus.error
+      );
+    });
+    willAdd.forEach((chapter) => {
+      chapter.status = ChapterStatus.waiting;
+      this.schedules.push(chapter);
     });
 
     this.progress();
+
+    return willAdd;
   }
 
   remove(chapters: ChapterModel[]) {
+    const willRemove = chapters.filter(
+      (chapter) => chapter.status === ChapterStatus.waiting
+    );
     this.schedules = this.schedules.filter((chapter) => {
-      if (chapters.includes(chapter)) {
-        if (chapter.status === ChapterStatus.waiting) {
-          chapter.status = ChapterStatus.idle;
-        }
+      if (willRemove.includes(chapter)) {
+        chapter.status = ChapterStatus.idle;
         return false;
       }
       return true;
     });
+    return willRemove;
   }
 }
 

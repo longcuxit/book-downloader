@@ -4,6 +4,7 @@ import List from "@mui/material/List";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 
 import DownloadIcon from "@mui/icons-material/Download";
 import PauseIcon from "@mui/icons-material/Pause";
@@ -31,31 +32,31 @@ const AllButtons = ({ books }: { books: BookModel[] }) => {
     <>
       <Button
         variant="contained"
-        startIcon={
-          composed.running ? (
-            <PauseIcon />
-          ) : composed.progress ? (
-            <ReplayIcon />
-          ) : (
-            <DownloadIcon />
-          )
-        }
         disabled={
           composed.progress === 100 || (!!composed.running && !stat.waiting)
         }
         onClick={allBooks.toggleDownload}
+        sx={{ minWidth: 44 }}
       >
-        Fetch
+        {composed.running ? (
+          <PauseIcon />
+        ) : composed.progress ? (
+          <ReplayIcon />
+        ) : (
+          <DownloadIcon />
+        )}
+        <Box display={{ xs: "none", sm: "block" }}>Fetch</Box>
       </Button>
 
       <Button
         variant="contained"
-        sx={{ marginLeft: 1 }}
-        startIcon={<SaveIcon />}
+        sx={{ marginLeft: 1, minWidth: 44 }}
+        // startIcon={<SaveIcon />}
         disabled={!!composed.running || !stat.success}
         onClick={() => books.forEach((book) => book.save())}
       >
-        Save
+        <SaveIcon />
+        <Box display={{ xs: "none", sm: "block" }}>Save</Box>
       </Button>
     </>
   );
@@ -107,7 +108,7 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
   return (
     <>
       <Grid container spacing={1}>
-        <Grid item xs={3}>
+        <Grid item xs={4} sm={3}>
           <TextField
             label="Skip chapters"
             size="small"
@@ -119,7 +120,7 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
             }}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4} sm={3}>
           <TextField
             label="Split chapters"
             size="small"
@@ -134,7 +135,8 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
 
         <Grid
           item
-          xs={6}
+          xs={4}
+          sm={6}
           display="flex"
           alignItems="center"
           justifyContent="end"

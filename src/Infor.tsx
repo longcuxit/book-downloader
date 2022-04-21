@@ -5,6 +5,10 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Divider from "@mui/material/Divider";
+
+import useTheme from "@mui/material/styles/useTheme";
 
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
 
@@ -18,6 +22,9 @@ export interface InfoProps {
 }
 
 export const Info = ({ info, image, onImage }: InfoProps) => {
+  const theme = useTheme();
+  const upSM = useMediaQuery(theme.breakpoints.up("sm"));
+
   const onDrop = useCallback(
     ([file]: File[]) => {
       if (!file) return;
@@ -56,8 +63,8 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
     <Grid container spacing={1}>
       <Grid item>
         <Box
-          width={150}
-          height={200}
+          width={120}
+          height={160}
           bgcolor="#ccc"
           display="flex"
           alignItems="center"
@@ -110,7 +117,9 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
             </>
           )}
           <Typography variant="subtitle2" padding={2}>
-            {isDragActive ? "Drop here ..." : "Drag, drop or click here ..."}
+            {isDragActive
+              ? "Drop here ..."
+              : "Drag-drop, paste or click here ..."}
           </Typography>
 
           <Box
@@ -120,11 +129,10 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
             component="div"
             {...getRootProps()}
             contentEditable
-            onKeyDown={(e: any) => {
-              if (e.ctrlKey || e.metaKey) return;
+            onFocus={(e: any) => {
               e.preventDefault();
+              e.target.blur();
             }}
-            onPaste={({ target }: any) => target.blur()}
             style={{ opacity: "0" }}
           />
         </Box>
@@ -140,14 +148,28 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
             <Typography variant="h6">{info.title}</Typography>
             <Box overflow="auto">
               {info.tags?.map((tag, i) => (
-                <div key={i} dangerouslySetInnerHTML={{ __html: tag }} />
+                <div
+                  style={{ margin: 8 }}
+                  key={i}
+                  dangerouslySetInnerHTML={{ __html: tag }}
+                />
               ))}
-              <hr />
-              <Typography variant="caption">{info.description}</Typography>
+              {upSM && (
+                <>
+                  <Divider sx={{ marginY: 1 }} />
+                  <Typography variant="caption">{info.description}</Typography>
+                </>
+              )}
             </Box>
           </Box>
         </Box>
       </Grid>
+      {!upSM && (
+        <Grid item xs={12}>
+          <Divider sx={{ marginY: 1 }} />
+          <Typography variant="caption">{info.description}</Typography>
+        </Grid>
+      )}
     </Grid>
   );
 };
