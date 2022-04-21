@@ -142,30 +142,18 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
         </Grid>
         <Grid item flex={1}>
           <Box position="relative" height="100%">
-            <Box
-              display="flex"
-              flexDirection="column"
-              position="absolute"
-              style={{ inset: 0 }}
-            >
-              <Typography variant="h6">{info.title}</Typography>
-              <Box overflow="auto">
-                {info.tags?.map((tag, i) => (
-                  <div
-                    style={{ margin: 8 }}
-                    key={i}
-                    dangerouslySetInnerHTML={{ __html: tag }}
-                  />
-                ))}
-                {upSM && (
-                  <Box textAlign="justify">
-                    <Divider sx={{ marginY: 1 }} />
-                    <Typography variant="caption">
-                      {info.description}
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
+            <Box position="absolute" style={{ inset: 0 }} overflow="auto">
+              <Typography variant="subtitle1">{info.title}</Typography>
+              <Divider sx={{ marginY: 1 }} />
+              {info.tags?.map((tag, i) => (
+                <div key={i} dangerouslySetInnerHTML={{ __html: tag }} />
+              ))}
+              {upSM && (
+                <Box textAlign="justify">
+                  <Divider sx={{ marginY: 1 }} />
+                  <Typography variant="caption">{info.description}</Typography>
+                </Box>
+              )}
             </Box>
           </Box>
         </Grid>
