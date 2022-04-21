@@ -31,6 +31,7 @@
     chapters: Chapter[]
   }
 */
+
 var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
 
 (function () {
@@ -138,5 +139,12 @@ var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
         return "<div>" + div.innerHTML + "</div>";
       },
     });
+
+    if (isMobile) {
+      setTimeout(() => {
+        var btn = container.firstElementChild;
+        btn.className = "btn btn-primary btn-md btn-block btn-shadow mt-3";
+      });
+    }
   };
 })();
