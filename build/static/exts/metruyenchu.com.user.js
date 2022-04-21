@@ -31,6 +31,7 @@
     chapters: Chapter[]
   }
 */
+var bundleSrc = "https://longcuxit.github.io/book-downloader/build" + "/static/js/bundle.js";
 
 (function () {
   "use strict";
@@ -39,7 +40,7 @@
   var isMobile = document.querySelector("#appMobile");
   const script = document.createElement("script");
 
-  script.src = "https://longcuxit.github.io/book-downloader/build" + "/static/js/bundle.js";
+  script.src = bundleSrc;
   document.head.appendChild(script);
 
   script.onload = function () {

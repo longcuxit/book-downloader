@@ -31,6 +31,7 @@
     chapters: Chapter[]
   }
 */
+var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
 
 (function () {
   "use strict";
@@ -39,7 +40,7 @@
   var isMobile = document.querySelector("#appMobile");
   const script = document.createElement("script");
 
-  script.src = PUBLIC_URL + "/static/js/bundle.js";
+  script.src = bundleSrc;
   document.head.appendChild(script);
 
   script.onload = function () {
