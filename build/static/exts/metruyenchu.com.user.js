@@ -39,10 +39,10 @@
   var isMobile = document.querySelector("#appMobile");
   const script = document.createElement("script");
 
-  // script.src =
-  //   "https://longcuxit.github.io/book-downloader/build/static/js/main.js";
+  script.src =
+    "https://longcuxit.github.io/book-downloader/build/static/js/main.js";
 
-  script.src = "http://localhost:3000/static/js/bundle.js";
+  // script.src = "http://localhost:3000/static/js/bundle.js";
   document.head.appendChild(script);
 
   script.onload = function () {
