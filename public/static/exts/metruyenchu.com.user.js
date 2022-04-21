@@ -59,7 +59,7 @@
     };
 
     var selectors = {
-      cover: ".page-content .nh-thumb img",
+      cover: "div.nh-thumb.shadow img",
       tags: _.queryAll(".media-body ul.list-unstyled.mb-4"),
       chapters: "#chapter-list .nh-section a.media",
     };
@@ -68,6 +68,7 @@
       container.className = "col-12";
       textSelectors.title = ".nh-section h1.h6";
       selectors.tags = _.queryAll("ul.list-unstyled", _.query(".nh-section"));
+
       selectors.chapters = "#chapterList a.media";
     }
 
