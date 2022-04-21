@@ -31,7 +31,8 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
       if (!file) return;
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => _.getImage(reader.result as string).then(onImage);
+      reader.onload = () =>
+        _.imageToJPEG(reader.result as string).then(onImage);
     },
     [onImage]
   );

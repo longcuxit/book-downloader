@@ -1,4 +1,5 @@
 import EventEmitter from "events";
+import { url } from "inspector";
 import { useEffect, useState } from "react";
 
 export const _ = {
@@ -24,7 +25,24 @@ export const _ = {
     return (el as any)?.[attr];
   },
 
-  getImage(src: string) {
+  async downloadImage(src: string) {
+    const urls: string[] = [
+      src,
+      `https://cors-anywhere.herokuapp.com/${src}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(src)}`,
+    ];
+
+    for await (const url of urls) {
+      try {
+        const image = await _.imageToJPEG(url);
+        if (image) return image;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  },
+
+  imageToJPEG(src: string) {
     return new Promise<string | undefined>((next) => {
       var img = new Image();
       img.crossOrigin = "Anonymous";

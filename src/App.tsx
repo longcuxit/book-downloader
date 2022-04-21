@@ -27,7 +27,7 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
     if (!open || props) return;
     fetchData().then(async ({ info, chapters }) => {
       if (!chapters.length) return;
-      const cover = await _.getImage(info.cover);
+      const cover = await _.downloadImage(info.cover);
 
       setProps({
         info: { ...info, cover },
