@@ -155,23 +155,19 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
                 />
               ))}
               {upSM && (
-                <>
+                <Box textAlign="justify">
                   <Divider sx={{ marginY: 1 }} />
-                  <Typography variant="caption" textAlign="justify">
-                    {info.description}
-                  </Typography>
-                </>
+                  <Typography variant="caption">{info.description}</Typography>
+                </Box>
               )}
             </Box>
           </Box>
         </Box>
       </Grid>
       {!upSM && (
-        <Grid item xs={12}>
+        <Grid item xs={12} textAlign="justify">
           <Divider sx={{ marginY: 1 }} />
-          <Typography variant="caption" textAlign="justify">
-            {info.description}
-          </Typography>
+          <Typography variant="caption">{info.description}</Typography>
         </Grid>
       )}
     </Grid>
