@@ -61,7 +61,7 @@ export const _ = {
   emptyImage:
     "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
 
-  async waitFor(getter: () => any, time = 500) {
+  async waitFor(getter: () => any, time = 100) {
     const check = async (): Promise<any> => {
       const result = await Promise.resolve(getter());
       if (result) return result;
