@@ -123,7 +123,7 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
             }}
           />
           <TextField
-            label="Split chapters"
+            label="Book chapters"
             size="small"
             type="number"
             margin="dense"
