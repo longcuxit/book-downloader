@@ -30,6 +30,8 @@ const AllButtons = ({ books }: { books: BookModel[] }) => {
 
   const { stat, composed } = allBooks;
 
+  useEffect(() => () => allBooks.destroy(), [allBooks]);
+
   return (
     <>
       <Button
@@ -79,26 +81,21 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
   const split = config.split || chapters.length;
 
   useEffect(() => {
-    setBooks((old) => {
-      old.forEach((book) => book.destroy());
-
-      const books: BookModel[] = [];
-      let start = 0;
-      while (start < chapters.length) {
-        const bookStart = Math.max(start, skip);
-        const end = Math.min(start + split, chapters.length);
-        if (bookStart < end) {
-          const bookInfo: BookInfo = {
-            ...info,
-            title: `${info.title} (${bookStart + 1}-${end})`,
-          };
-          books.push(new BookModel(bookInfo, chapters.slice(bookStart, end)));
-        }
-        start += split;
+    const books: BookModel[] = [];
+    let start = 0;
+    while (start < chapters.length) {
+      const bookStart = Math.max(start, skip);
+      const end = Math.min(start + split, chapters.length);
+      if (bookStart < end) {
+        const bookInfo: BookInfo = {
+          ...info,
+          title: `${info.title} (${bookStart + 1}-${end})`,
+        };
+        books.push(new BookModel(bookInfo, chapters.slice(bookStart, end)));
       }
-
-      return books;
-    });
+      start += split;
+    }
+    setBooks(books);
   }, [skip, split, chapters, info]);
 
   useMemo(() => {
@@ -106,6 +103,8 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
       book.info.cover = image ?? info.cover;
     });
   }, [image, info, books]);
+
+  useEffect(() => () => books.forEach((book) => book.destroy()), [books]);
 
   return (
     <>
