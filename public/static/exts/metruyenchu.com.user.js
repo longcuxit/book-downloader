@@ -74,7 +74,7 @@ var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
       fetchData() {
         var info = {
           i18n: "vi",
-          author: _.linkFormat(_.query("a[href*=tac-gia]")),
+          author: _.getText("a[href*=tac-gia]"),
           cover: _.getAttr(selectors.cover, "src"),
           tags: selectors.tags.map(function (ul) {
             return _.tagsFromElements(_.queryAll("li", ul));

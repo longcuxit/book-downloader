@@ -56,7 +56,7 @@ var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
         var info = {
           i18n: "vi",
           title: _.getText(".story-title"),
-          author: _.linkFormat(_.query(".info a[href*=tac-gia]")),
+          author: _.getText(".info a[href*=tac-gia]"),
           publisher: "",
           description: _.getText(".desc-text"),
           cover: _.getAttr(".col-info-desc .book>img", "src"),

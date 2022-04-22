@@ -74,7 +74,7 @@ var bundleSrc = "https://longcuxit.github.io/book-downloader/build" + "/static/j
       fetchData() {
         var info = {
           i18n: "vi",
-          author: _.linkFormat(_.query("a[href*=tac-gia]")),
+          author: _.getText("a[href*=tac-gia]"),
           cover: _.getAttr(selectors.cover, "src"),
           tags: selectors.tags.map(function (ul) {
             return _.tagsFromElements(_.queryAll("li", ul));
