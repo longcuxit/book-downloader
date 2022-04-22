@@ -56,7 +56,8 @@ var bundleSrc = "https://longcuxit.github.io/book-downloader/build" + "/static/j
         var info = {
           i18n: "vi",
           title: _.getText(".story-title"),
-          author: _.getText(".info a[href*=tac-gia]"),
+          author: _.linkFormat(_.query(".info a[href*=tac-gia]")),
+          publisher: "",
           description: _.getText(".desc-text"),
           cover: _.getAttr(".col-info-desc .book>img", "src"),
           tags: [
@@ -88,7 +89,7 @@ var bundleSrc = "https://longcuxit.github.io/book-downloader/build" + "/static/j
             var { chap_list } = await fetch(url).then((rs) => rs.json());
             div.innerHTML = chap_list;
             return Array.from(div.querySelectorAll("a")).map((aTag) => ({
-              title: aTag.textContent.trim(),
+              title: aTag.innerText.trim(),
               url: aTag.href,
             }));
           })

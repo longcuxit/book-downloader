@@ -53,7 +53,6 @@ var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
 
     var textSelectors = {
       title: ".media-body h1",
-      author: "a[href*=tac-gia]",
       publisher: "#nav-intro .bg-yellow-white .h4",
       description: "#nav-intro .content",
     };
@@ -68,26 +67,26 @@ var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
       container.className = "col-12";
       textSelectors.title = ".nh-section h1.h6";
       selectors.tags = _.queryAll("ul.list-unstyled", _.query(".nh-section"));
-
       selectors.chapters = "#chapterList a.media";
     }
 
     bookDownloaderRegister(container, {
-      fetchData: function () {
+      fetchData() {
         var info = {
           i18n: "vi",
+          author: _.linkFormat(_.query("a[href*=tac-gia]")),
           cover: _.getAttr(selectors.cover, "src"),
           tags: selectors.tags.map(function (ul) {
             return _.tagsFromElements(_.queryAll("li", ul));
           }),
         };
 
-        Object.entries(textSelectors).forEach(function (entry) {
+        Object.entries(textSelectors).forEach((entry) => {
           info[entry[0]] = _.getText(entry[1]);
         });
 
-        var getChapters = function () {
-          var chapters = _.queryAll(selectors.chapters).map(function (aTag) {
+        var getChapters = () => {
+          var chapters = _.queryAll(selectors.chapters).map((aTag) => {
             return {
               title: _.query(
                 ".text-overflow-1-lines",
@@ -103,7 +102,7 @@ var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
           EventBus.$emit("chapterList", {});
 
           getChapters = ((query) => {
-            return function () {
+            return () => {
               var chapters = query();
               if (!chapters) return;
               var li = _.query(".pagination li:last-child");
@@ -111,12 +110,12 @@ var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
               var btn = li.firstElementChild;
 
               return _.asyncReduce(
-                function () {
+                () => {
                   if (li.className.includes("disabled")) return;
                   btn.click();
                   return _.delay().then(query);
                 },
-                function (chapters, current) {
+                (chapters, current) => {
                   return chapters.concat(current);
                 },
                 chapters
@@ -128,11 +127,11 @@ var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
         }
 
         console.log(info);
-        return _.waitFor(getChapters).then(function (chapters) {
+        return _.waitFor(getChapters).then((chapters) => {
           return { info: info, chapters: chapters };
         });
       },
-      formatContent: function (content) {
+      formatContent(content) {
         var div = document.createElement("div");
         div.innerHTML = content;
         div = _.query("#js-read__content", div);

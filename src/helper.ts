@@ -91,14 +91,15 @@ export const _ = {
       timeOut = setTimeout(() => call.apply(null, args), time);
     }) as any as T;
   },
+  linkFormat(link: HTMLLinkElement) {
+    return '<a href="' + link.href + '">' + link.innerText.trim() + "</a>";
+  },
   tagsFromElements(els: HTMLElement[]) {
     return els
       .map(function (el) {
         var text = el.innerText.trim();
         const link = el.tagName === "A" ? el : (_.query("a", el) as any);
-        if (link) {
-          text = '<a href="' + link.href + '">' + text + "</a>";
-        }
+        if (link) return _.linkFormat(link);
         return text;
       })
       .join(", ");
