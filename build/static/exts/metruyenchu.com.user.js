@@ -32,6 +32,7 @@
   }
 */
 
+// var "https://longcuxit.github.io/book-downloader/build" = "http://localhost:3000";
 var bundleSrc = "https://longcuxit.github.io/book-downloader/build" + "/static/js/bundle.js";
 
 (function () {

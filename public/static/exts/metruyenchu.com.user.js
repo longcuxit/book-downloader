@@ -32,6 +32,7 @@
   }
 */
 
+// var PUBLIC_URL = "http://localhost:3000";
 var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
 
 (function () {

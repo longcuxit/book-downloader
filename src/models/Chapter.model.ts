@@ -56,7 +56,7 @@ export class ChapterModel extends EventEmitter {
 
       let content = await fetch(this.url).then((res) => res.text());
       content = await Promise.resolve(this.format(content));
-      this.content = _.cleanHTML(content, formatTags, ["br"]);
+      this.content = _.cleanHTML(content, formatTags);
       this.status = ChapterStatus.success;
     } catch (_) {
       if (!retry) {

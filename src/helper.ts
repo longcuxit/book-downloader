@@ -1,5 +1,4 @@
 import EventEmitter from "events";
-import { url } from "inspector";
 import { useEffect, useState } from "react";
 
 export const _ = {
@@ -58,8 +57,6 @@ export const _ = {
       img.src = src;
     });
   },
-  emptyImage:
-    "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
 
   async waitFor(getter: () => any, time = 100) {
     const check = async (): Promise<any> => {
@@ -130,7 +127,7 @@ export const _ = {
       }
       return "<br/>";
     });
-    html = html.replaceAll(/> +</g, "><");
+    html = html.replaceAll(/>( |\n|\t)+</g, "><");
     html = html.replaceAll(/(<br\/>)+/g, "<br/><br/>");
     return html;
   },
