@@ -53,6 +53,7 @@ var bundleSrc = "https://longcuxit.github.io/book-downloader/build" + "/static/j
 
     var textSelectors = {
       title: ".media-body h1",
+      author: "a[href*=tac-gia]",
       publisher: "#nav-intro .bg-yellow-white .h4",
       description: "#nav-intro .content",
     };
@@ -74,7 +75,6 @@ var bundleSrc = "https://longcuxit.github.io/book-downloader/build" + "/static/j
       fetchData() {
         var info = {
           i18n: "vi",
-          author: _.getText("a[href*=tac-gia]"),
           cover: _.getAttr(selectors.cover, "src"),
           tags: selectors.tags.map(function (ul) {
             return _.tagsFromElements(_.queryAll("li", ul));
