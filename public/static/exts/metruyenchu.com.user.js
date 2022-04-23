@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 // ==UserScript==
-// @name         MeTruyenChu downloader
+// @name         MeTruyenChu.com downloader
 // @namespace    longcuxit
 // @description  Tải truyện từ metruyenchu.com định dạng epub.
 // @version      1.0
-// @icon         https://i.imgur.com/ZOmmIGK.png
+// @icon         https://metruyenchu.com/assets/images/logo.png?260324
 // @author       HoangLong
 // @oujs:author  longcuxit
 // @match        http://metruyenchu.com/truyen/*

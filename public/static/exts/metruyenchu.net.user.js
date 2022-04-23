@@ -4,7 +4,7 @@
 // @namespace    longcuxit
 // @description  Tải truyện từ metruyenchu.net định dạng epub.
 // @version      1.0
-// @icon         https://i.imgur.com/ZOmmIGK.png
+// @icon         https://metruyenchu.net/favicon/apple-icon-72x72.png
 // @author       HoangLong
 // @oujs:author  longcuxit
 // @match        http://metruyenchu.net/*
