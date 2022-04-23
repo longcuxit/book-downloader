@@ -15,9 +15,10 @@ export const _ = {
     return el?.innerText.trim() ?? "";
   },
 
-  stringToDom(html: string, selector = "body") {
-    let doc = new DOMParser().parseFromString(html, "text/html");
-    return _.query(selector, doc);
+  stringToDom(html: string, selector?: string) {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return selector ? _.query(selector, div) : div;
   },
 
   getAttr(

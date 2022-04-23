@@ -43,11 +43,7 @@ export class BookModel extends EventEmitter {
     return { available, running, progress, buffer };
   }
 
-  constructor(
-    public info: BookInfo,
-    public chapters: ChapterModel[],
-    public parseChapter: (v: string) => string = String
-  ) {
+  constructor(public info: BookInfo, public chapters: ChapterModel[]) {
     super();
 
     chapters.forEach((chapter) => {
@@ -92,20 +88,8 @@ export class BookModel extends EventEmitter {
     });
 
     await Promise.all(
-      this.chapters.map(async ({ title, content }) => {
-        content = this.parseChapter(content);
-        const dom = _.stringToDom(content)!;
-        await Promise.all(
-          Array.from(dom.querySelectorAll("img")).map(async (img) => {
-            const data = await _.downloadImage(img.src);
-            if (data) {
-              const id = "_" + _.hashString(img.src);
-              img.replaceWith(`[img:${id}]`);
-              epub.image(data, id);
-            }
-          })
-        );
-        content = _.cleanHTML(dom.outerHTML);
+      this.chapters.map(async ({ title, content, images }) => {
+        Object.entries(images).forEach(([key, data]) => epub.image(data, key));
         content = content.replace(/\[img:(.+)\]/gi, "<%= image['$1']%>");
         epub.add(title, content);
       })

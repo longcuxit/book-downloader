@@ -32,11 +32,11 @@ function BookDownloader({ fetchData, parseChapter }: BookDownloaderProps) {
       setProps({
         info: { ...info, cover },
         chapters: chapters.map((chap) => {
-          return new ChapterModel(chap.title, chap.url);
+          return new ChapterModel(chap.title, chap.url, parseChapter);
         }),
       });
     });
-  }, [fetchData, open, props]);
+  }, [fetchData, open, parseChapter, props]);
 
   return (
     <>
@@ -71,7 +71,7 @@ function BookDownloader({ fetchData, parseChapter }: BookDownloaderProps) {
           {props ? (
             <>
               <Info info={props.info} onImage={setImage} image={image} />
-              <BookList {...props} image={image} parseChapter={parseChapter} />
+              <BookList {...props} image={image} />
             </>
           ) : (
             <Box

@@ -70,15 +70,9 @@ export interface BookListProps {
   chapters: ChapterModel[];
   info: BookInfo;
   image?: Blob;
-  parseChapter?: (v: string) => string;
 }
 
-export const BookList = ({
-  chapters,
-  info,
-  image,
-  parseChapter = String,
-}: BookListProps) => {
+export const BookList = ({ chapters, info, image }: BookListProps) => {
   const [config, setConfig] = useState({ skip: 0, split: 1000 });
 
   const [books, setBooks] = useState<BookModel[]>([]);
@@ -97,17 +91,13 @@ export const BookList = ({
           ...info,
           title: `${info.title} (${bookStart + 1}-${end})`,
         };
-        const book = new BookModel(
-          bookInfo,
-          chapters.slice(bookStart, end),
-          parseChapter
-        );
+        const book = new BookModel(bookInfo, chapters.slice(bookStart, end));
         books.push(book);
       }
       start += split;
     }
     setBooks(books);
-  }, [skip, split, chapters, info, parseChapter]);
+  }, [skip, split, chapters, info]);
 
   useMemo(() => {
     books.forEach((book) => {
