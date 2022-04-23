@@ -86,18 +86,6 @@ export const _ = {
     return check();
   },
 
-  async asyncReduce<T, V>(
-    getter: () => V | undefined,
-    next: (old: T, value: V) => T,
-    from: T
-  ) {
-    while (true) {
-      const value = await Promise.resolve(getter());
-      if (value === undefined) return from;
-      from = await Promise.resolve(next(from, value));
-    }
-  },
-
   delay<T = undefined>(time = 0, value?: T) {
     return new Promise<T>((next) => setTimeout(() => next(value as T), time));
   },

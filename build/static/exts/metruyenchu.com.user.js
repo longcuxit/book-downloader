@@ -107,24 +107,20 @@ var bundleSrc = "https://longcuxit.github.io/book-downloader/build" + "/static/j
         EventBus.$emit("chapterList", {});
 
         getChapters = ((query) => {
-          return () => {
-            var chapters = query();
+          return async () => {
+            let chapters = query();
             if (!chapters) return;
-            var li = _.query(".pagination li:last-child");
-            if (!li) return chapters;
-            var btn = li.firstElementChild;
 
-            return _.asyncReduce(
-              () => {
-                if (li.className.includes("disabled")) return;
+            const li = _.query(".pagination li:last-child");
+            if (li) {
+              var btn = li.firstElementChild;
+              while (!li.className.includes("disabled")) {
                 btn.click();
-                return _.delay().then(query);
-              },
-              (chapters, current) => {
-                return chapters.concat(current);
-              },
-              chapters
-            );
+                await _.delay();
+                chapters = chapters.concat(query());
+              }
+            }
+            return chapters;
           };
         })(getChapters);
       } else {
