@@ -33,21 +33,12 @@
 */
 
 // var "https://longcuxit.github.io/book-downloader/build" = "http://localhost:3000";
-var bundleSrc = "https://longcuxit.github.io/book-downloader/build" + "/static/js/bundle.js";
 
 (async () => {
   "use strict";
 
   if (!document.querySelector("#suggest-book")) return;
-
-  await (() => {
-    return new Promise((next) => {
-      const script = document.createElement("script");
-      script.src = bundleSrc;
-      document.head.appendChild(script);
-      script.onload = next;
-    });
-  })();
+  await import("https://longcuxit.github.io/book-downloader/build" + "/static/js/bundle.js");
 
   var isMobile = document.querySelector("#appMobile");
 

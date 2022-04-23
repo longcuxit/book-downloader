@@ -32,20 +32,12 @@
 */
 
 // var PUBLIC_URL = "http://localhost:3000";
-var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
 
 (async () => {
   "use strict";
 
   if (!document.querySelector("#manga-detail")) return;
-  await (() => {
-    return new Promise((next) => {
-      const script = document.createElement("script");
-      script.src = bundleSrc;
-      document.head.appendChild(script);
-      script.onload = next;
-    });
-  })();
+  await import(PUBLIC_URL + "/static/js/bundle.js");
 
   var _ = bookDownloaderRegister._;
   var container = document.createElement("span");
