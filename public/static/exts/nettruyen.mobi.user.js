@@ -64,7 +64,7 @@ var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
         tags: [
           _.tagsFromElements(
             _.queryAll(
-              ".list-info .info-item:nth-child(3), .list-info .info-item:nth-child(4)"
+              ".list-info .info-item:nth-child(3) .info-content, .list-info .info-item:nth-child(4) a"
             )
           ),
         ],
