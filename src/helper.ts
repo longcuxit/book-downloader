@@ -123,8 +123,15 @@ export const _ = {
       .join(", ");
   },
 
-  cleanHTML(html: string) {
-    html = html.replaceAll(/<[^>]*>/g, "<br/>");
+  cleanHTML(html: string, skip: string[] = []) {
+    skip = skip.flatMap((tag) => [`<${tag}`, `</${tag}>`]);
+
+    html = html.replaceAll(/<[^>]*>/g, (match) => {
+      if (skip.find((tag) => match.startsWith(tag))) {
+        return match.replace(/ .+>/, ">");
+      }
+      return "<br/>";
+    });
     html = html.replaceAll(/>( |\n|\t)+</g, "><");
     html = html.replaceAll(/(<br\/>)+/g, "<br/><br/>");
     return html;

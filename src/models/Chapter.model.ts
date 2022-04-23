@@ -82,7 +82,7 @@ export class ChapterModel extends EventEmitter {
           };
           return loader;
         });
-        this.content = _.cleanHTML(dom.outerHTML);
+        this.content = _.cleanHTML(dom.outerHTML, ["a"]);
       }
 
       downloader.add(...this.chunks);
