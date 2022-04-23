@@ -16,12 +16,12 @@ import { BookList, BookListProps } from "./BookList";
 import { Info } from "./Infor";
 import { _ } from "./helper";
 
-function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
+function BookDownloader({ fetchData, parseChapter }: BookDownloaderProps) {
   const [open, setOpen] = React.useState(false);
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
   const [props, setProps] = useState<BookListProps>();
-  const [image, setImage] = useState<string>();
+  const [image, setImage] = useState<Blob>();
 
   useEffect(() => {
     if (!open || props) return;
@@ -32,11 +32,11 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
       setProps({
         info: { ...info, cover },
         chapters: chapters.map((chap) => {
-          return new ChapterModel(chap.title, chap.url, formatContent);
+          return new ChapterModel(chap.title, chap.url);
         }),
       });
     });
-  }, [fetchData, formatContent, open, props]);
+  }, [fetchData, open, props]);
 
   return (
     <>
@@ -71,7 +71,7 @@ function BookDownloader({ fetchData, formatContent }: BookDownloaderProps) {
           {props ? (
             <>
               <Info info={props.info} onImage={setImage} image={image} />
-              <BookList {...props} image={image} />
+              <BookList {...props} image={image} parseChapter={parseChapter} />
             </>
           ) : (
             <Box

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 
 import Typography from "@mui/material/Typography";
@@ -18,8 +18,8 @@ import { BookInfo } from "./models/Book.model";
 
 export interface InfoProps {
   info: BookInfo;
-  onImage(data?: string): void;
-  image?: string;
+  onImage(data?: Blob): void;
+  image?: Blob;
 }
 
 export const Info = ({ info, image, onImage }: InfoProps) => {
@@ -32,7 +32,9 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () =>
-        _.imageToJPEG(reader.result as string).then(onImage);
+        _.imageToBlob(reader.result as string).then((img) =>
+          onImage(img || undefined)
+        );
     },
     [onImage]
   );
@@ -60,6 +62,8 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
   });
 
   const cover = image ?? info.cover;
+
+  const coverUrl = useMemo(() => cover && URL.createObjectURL(cover), [cover]);
 
   return (
     <Container>
@@ -96,7 +100,7 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
                   height="100%"
                   component="img"
                   style={{ objectFit: "cover" }}
-                  src={cover}
+                  src={coverUrl}
                   alt="Cover"
                 />
                 {image && (

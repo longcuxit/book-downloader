@@ -96,7 +96,7 @@ var bundleSrc = PUBLIC_URL + "/static/js/bundle.js";
         ).then((list) => list.flat());
         return { info, chapters };
       },
-      formatContent(content) {
+      parseChapter(content) {
         var div = document.createElement("div");
         div.innerHTML = content;
         div = _.query("#chapter-c", div);

@@ -15,6 +15,11 @@ export const _ = {
     return el?.innerText.trim() ?? "";
   },
 
+  stringToDom(html: string, selector = "body") {
+    let doc = new DOMParser().parseFromString(html, "text/html");
+    return _.query(selector, doc);
+  },
+
   getAttr(
     selector: string,
     attr: string,
@@ -24,25 +29,37 @@ export const _ = {
     return (el as any)?.[attr];
   },
 
-  async downloadImage(src: string) {
+  async downloadImage(src?: string) {
+    if (!src) return;
     const urls: string[] = [
-      src,
+      `https://api.allorigins.win/raw?url=${encodeURI(src)}`,
       `https://cors-anywhere.herokuapp.com/${src}`,
-      `https://api.allorigins.win/raw?url=${encodeURIComponent(src)}`,
+      src,
     ];
 
     for await (const url of urls) {
       try {
-        const image = await _.imageToJPEG(url);
+        const image = await _.imageToBlob(url);
         if (image) return image;
       } catch (error) {
         console.log(error);
       }
     }
   },
+  hashString(value: string) {
+    let hash = 0;
+    let chr: number;
+    if (value.length === 0) return hash;
+    for (let i = 0; i < value.length; i++) {
+      chr = value.charCodeAt(i);
+      hash = (hash << 5) - hash + chr;
+      hash |= 0;
+    }
+    return hash.toString(16);
+  },
 
-  imageToJPEG(src: string) {
-    return new Promise<string | undefined>((next) => {
+  imageToBlob(src: string, type: string = "image/webp") {
+    return new Promise<Blob | null>((next) => {
       var img = new Image();
       img.crossOrigin = "Anonymous";
       img.onload = () => {
@@ -51,9 +68,9 @@ export const _ = {
         canvas.height = img.naturalHeight;
         canvas.width = img.naturalWidth;
         ctx.drawImage(img, 0, 0);
-        next(canvas.toDataURL("image/jpeg"));
+        canvas.toBlob(next, type);
       };
-      img.onerror = () => next(undefined);
+      img.onerror = () => next(null);
       img.src = src;
     });
   },
@@ -96,7 +113,7 @@ export const _ = {
   },
   tagsFromElements(els: HTMLElement[]) {
     return els
-      .map(function (el) {
+      .map((el) => {
         var text = el.innerText.trim();
         const link = el.tagName === "A" ? el : (_.query("a", el) as any);
         if (link) return _.linkFormat(link);
@@ -105,29 +122,8 @@ export const _ = {
       .join(", ");
   },
 
-  cleanHTML(
-    html: string,
-    custom: Record<string, (match: string) => string> = {},
-    ignore: string[] = []
-  ) {
-    const ignoreTags = ignore.flatMap((name) => {
-      return [`<${name} `, `</${name}>`];
-    });
-
-    const customEntries = Object.entries(custom).map(([name, call]) => {
-      ignoreTags.push(`</${name}>`);
-      return [`<${name} `, call] as [string, (match: string) => string];
-    });
-
-    html = html.replaceAll(/<[^>]*>/g, (match) => {
-      const lowerCase = match.toLocaleLowerCase();
-      const custom = customEntries.find((entry) => match.startsWith(entry[0]));
-      if (custom) return custom[1](match);
-      if (ignoreTags.find((tag) => lowerCase.startsWith(tag))) {
-        return match;
-      }
-      return "<br/>";
-    });
+  cleanHTML(html: string) {
+    html = html.replaceAll(/<[^>]*>/g, "<br/>");
     html = html.replaceAll(/>( |\n|\t)+</g, "><");
     html = html.replaceAll(/(<br\/>)+/g, "<br/><br/>");
     return html;

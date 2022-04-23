@@ -131,12 +131,11 @@ var bundleSrc = "https://longcuxit.github.io/book-downloader/build" + "/static/j
           return { info: info, chapters: chapters };
         });
       },
-      formatContent(content) {
-        var div = document.createElement("div");
-        div.innerHTML = content;
-        div = _.query("#js-read__content", div);
-        _.queryAll(".pt-3.text-center", div).forEach((div) => div.remove());
-        return "<div>" + div.innerHTML + "</div>";
+      parseChapter(content) {
+        const dom = _.stringToDom(content, "#js-read__content");
+        _.queryAll(".pt-3.text-center", dom).forEach((div) => div.remove());
+        console.log(dom);
+        return "<div>" + dom.innerHTML + "</div>";
       },
     });
 

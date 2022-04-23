@@ -13,7 +13,7 @@ declare global {
       chapters: { title: string; url: string }[];
     }>;
 
-    formatContent(content: string): string;
+    parseChapter(content: string): string;
   }
   interface Window {
     bookDownloaderRegister(
@@ -26,7 +26,9 @@ declare global {
     init(props: jEpubInitProps): jEpub;
     add(title: string, content: string): jEpub;
     cover(data: any): jEpub;
+    image(data: Blob | ArrayBuffer, name: string): jEpub;
     generate(): Promise<any>;
+    static html2text(html: string, noBr?: boolean): string;
   }
 }
 

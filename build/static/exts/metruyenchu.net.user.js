@@ -96,7 +96,7 @@ var bundleSrc = "https://longcuxit.github.io/book-downloader/build" + "/static/j
         ).then((list) => list.flat());
         return { info, chapters };
       },
-      formatContent(content) {
+      parseChapter(content) {
         var div = document.createElement("div");
         div.innerHTML = content;
         div = _.query("#chapter-c", div);

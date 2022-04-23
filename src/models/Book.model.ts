@@ -19,7 +19,7 @@ export interface BookStatCompose {
 }
 
 export interface BookInfo extends jEpubInitProps {
-  cover?: string;
+  cover?: Blob;
 }
 
 const zeroStat: BookChaptersStat = {
@@ -43,7 +43,11 @@ export class BookModel extends EventEmitter {
     return { available, running, progress, buffer };
   }
 
-  constructor(public info: BookInfo, public chapters: ChapterModel[]) {
+  constructor(
+    public info: BookInfo,
+    public chapters: ChapterModel[],
+    public parseChapter: (v: string) => string = String
+  ) {
     super();
 
     chapters.forEach((chapter) => {
@@ -87,16 +91,29 @@ export class BookModel extends EventEmitter {
       description: `<br/>${info.description}`,
     });
 
-    this.chapters.forEach((chapter) => {
-      epub.add(chapter.title, chapter.content);
-    });
+    await Promise.all(
+      this.chapters.map(async ({ title, content }) => {
+        content = this.parseChapter(content);
+        const dom = _.stringToDom(content)!;
+        await Promise.all(
+          Array.from(dom.querySelectorAll("img")).map(async (img) => {
+            const data = await _.downloadImage(img.src);
+            if (data) {
+              const id = "_" + _.hashString(img.src);
+              img.replaceWith(`[img:${id}]`);
+              epub.image(data, id);
+            }
+          })
+        );
+        content = _.cleanHTML(dom.outerHTML);
+        content = content.replace(/\[img:(.+)\]/gi, "<%= image['$1']%>");
+        epub.add(title, content);
+      })
+    );
 
     try {
       if (cover) {
-        const buffer = await fetch(cover).then((result) =>
-          result.arrayBuffer()
-        );
-        epub.cover(buffer);
+        epub.cover(cover);
       }
       saveAs(await epub.generate(), `${info.title}.epub`);
       await _.delay(500);
