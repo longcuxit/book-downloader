@@ -72,23 +72,22 @@
         return +url.split("=")[1];
       }
 
-      var div = document.createElement("div");
-      var chapters = await Promise.all(
+      const chapters = await Promise.all(
         Array.from({ length: getTotalPages() }, async (_, i) => {
-          var url = "https://metruyenchu.net/api/services/list-chapter?";
-          url += ["type=list_chapter", "tid=" + bookId, "page=" + (i + 1)].join(
-            "&"
-          );
+          const url =
+            "https://metruyenchu.net/api/services/list-chapter?" +
+            ["type=list_chapter", "tid=" + bookId, "page=" + (i + 1)].join("&");
 
           var { chap_list } = await fetch(url).then((rs) => rs.json());
-          div.innerHTML = chap_list;
+          const div = _.stringToDom(chap_list);
           return Array.from(div.querySelectorAll("a")).map((aTag) => ({
             title: aTag.innerText.trim(),
             url: aTag.href,
           }));
         })
-      ).then((list) => list.flat());
-      return { info, chapters };
+      );
+
+      return { info, chapters: chapters.flat() };
     },
     parseChapter(content) {
       const dom = _.stringToDom(content, "#chapter-c");
