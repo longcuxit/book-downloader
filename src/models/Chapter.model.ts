@@ -1,5 +1,5 @@
-import { LeakAddTwoTone } from "@mui/icons-material";
 import EventEmitter from "events";
+import { downloader, DownloadStep } from "../Downloader";
 import { _ } from "../helper";
 
 export enum ChapterStatus {
@@ -17,8 +17,10 @@ export type ChapterStatusChange = {
 
 export class ChapterModel extends EventEmitter {
   _status = ChapterStatus.idle;
-  content = "";
+  content?: string;
   images: Record<string, Blob> = {};
+  chunks?: DownloadStep[];
+  progress = 0;
 
   get status() {
     return this._status;
@@ -38,32 +40,58 @@ export class ChapterModel extends EventEmitter {
     super();
   }
 
-  async download(retry: number) {
-    try {
-      this.status = ChapterStatus.loading;
+  async startDownload() {
+    if ([ChapterStatus.idle, ChapterStatus.error].includes(this.status)) {
+      this.status = ChapterStatus.waiting;
+      return downloader.add(this.download);
+    }
+  }
 
-      let content = await fetch(this.url).then((res) => res.text());
-      content = this.parse(content);
-      const dom = _.stringToDom(content)!;
-      await Promise.all(
-        Array.from(dom.querySelectorAll("img")).map(async (img) => {
-          const data = await _.downloadImage(img.src);
-          if (data) {
-            const id = "_" + _.hashString(img.src);
-            img.replaceWith(`[img:${id}]`);
-            this.images[id] = data;
-          }
-        })
-      );
-      this.content = _.cleanHTML(dom.outerHTML);
-      this.status = ChapterStatus.success;
-    } catch (_) {
-      if (!retry) {
-        this.status = ChapterStatus.error;
-        this.content = "Error!!!";
-      } else {
-        this.download(retry - 1);
+  stopDownload() {
+    if ([ChapterStatus.waiting, ChapterStatus.loading].includes(this.status)) {
+      downloader.remove(this.download);
+      if (this.chunks) {
+        downloader.remove(...this.chunks);
+        delete this.chunks;
       }
     }
   }
+
+  private download = async () => {
+    try {
+      this.status = ChapterStatus.loading;
+      if (!this.content) {
+        let content = await fetch(this.url).then((res) => res.text());
+        this.content = this.parse(content);
+      }
+      if (!this.chunks) {
+        const dom = _.stringToDom(this.content)!;
+        this.chunks = Array.from(dom.querySelectorAll("img")).map((img) => {
+          const id = "_" + _.hashString(img.src);
+          img.replaceWith(`[img:${id}]`);
+
+          const loader = async () => {
+            const data = await _.downloadImage(img.src);
+            if (data) {
+              this.emit("progress", this.progress++);
+              this.images[id] = data;
+              if (this.chunks!.length === this.progress) {
+                this.status = ChapterStatus.success;
+              }
+            }
+          };
+          return loader;
+        });
+        this.content = _.cleanHTML(dom.outerHTML);
+      }
+
+      downloader.add(...this.chunks);
+
+      if (this.chunks.length === 0) {
+        this.status = ChapterStatus.success;
+      }
+    } catch (_) {
+      this.status = ChapterStatus.error;
+    }
+  };
 }

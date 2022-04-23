@@ -1,6 +1,5 @@
 import EventEmitter from "events";
 import { saveAs } from "file-saver";
-import { downloader } from "../Downloader";
 import { _ } from "../helper";
 
 import {
@@ -37,8 +36,20 @@ export class BookModel extends EventEmitter {
     const { stat, chapters } = this;
     const available = stat.idle + stat.error;
     const running = stat.waiting + stat.loading;
-    const progress = (stat.success / chapters.length) * 100;
-    const buffer = ((stat.success + stat.loading) / chapters.length) * 100;
+
+    const totalProgress =
+      chapters.length +
+      chapters.reduce((count, chapter) => {
+        return count + (chapter.chunks?.length ?? 0);
+      }, 0);
+    const totalSuccess =
+      stat.success +
+      chapters.reduce((count, chapter) => {
+        return count + chapter.progress;
+      }, 0);
+
+    const progress = (totalSuccess / totalProgress) * 100;
+    const buffer = ((totalSuccess + stat.loading) / totalProgress) * 100;
 
     return { available, running, progress, buffer };
   }
@@ -49,8 +60,16 @@ export class BookModel extends EventEmitter {
     chapters.forEach((chapter) => {
       this.stat[chapter.status] += 1;
       chapter.on("status", this.onChapterStatus);
+      chapter.on("progress", this.onChapterProgress);
     });
   }
+
+  private onChapterProgress = () => {
+    this.onChapterStatus({
+      from: ChapterStatus.idle,
+      to: ChapterStatus.idle,
+    });
+  };
 
   private onChapterStatus = ({ from, to }: ChapterStatusChange) => {
     const { stat } = this;
@@ -60,11 +79,11 @@ export class BookModel extends EventEmitter {
   };
 
   startDownload() {
-    downloader.add(this.chapters);
+    this.chapters.forEach((chapter) => chapter.startDownload());
   }
 
   stopDownload() {
-    downloader.remove(this.chapters);
+    this.chapters.forEach((chapter) => chapter.stopDownload());
   }
 
   toggleDownload = () => {
@@ -88,9 +107,13 @@ export class BookModel extends EventEmitter {
     });
 
     await Promise.all(
-      this.chapters.map(async ({ title, content, images }) => {
+      this.chapters.map(async ({ title, content, images, url }) => {
         Object.entries(images).forEach(([key, data]) => epub.image(data, key));
-        content = content.replace(/\[img:(.+)\]/gi, "<%= image['$1']%>");
+        if (!content) {
+          content = `Not content!!! <br/><br/><a href="${url}">${url}</a>`;
+        } else {
+          content = content.replace(/\[img:(.+)\]/gi, "<%= image['$1']%>");
+        }
         epub.add(title, content);
       })
     );
@@ -109,6 +132,7 @@ export class BookModel extends EventEmitter {
   destroy() {
     this.chapters.forEach((chapter) => {
       chapter.off("status", this.onChapterStatus);
+      chapter.off("progress", this.onChapterProgress);
     });
     this.chapters.length = 0;
   }

@@ -1,64 +1,55 @@
-import { ChapterModel, ChapterStatus } from "./models/Chapter.model";
+import EventEmitter from "events";
 
 const maxLoading = 6;
-class Downloader {
-  schedules: ChapterModel[] = [];
+
+export type DownloadStep = () => any;
+class Downloader extends EventEmitter {
+  schedules: DownloadStep[] = [];
   loading = 0;
   private wakeLock?: any;
 
-  private async progress() {
+  private progress() {
     if (!this.schedules.length) {
-      await this.wakeLock?.release();
-      delete this.wakeLock;
+      this.wakeLock?.release().then(() => {
+        delete this.wakeLock;
+      });
       return;
     }
     if (this.loading >= maxLoading) return;
-    if ("wakeLock" in navigator && !this.wakeLock) {
-      this.wakeLock = await (navigator as any).wakeLock.request("screen");
+    if (this.loading === 0 && "wakeLock" in navigator) {
+      (navigator as any).wakeLock.request("screen").then((wakeLock: any) => {
+        if (!this.schedules.length) {
+          wakeLock.release();
+        } else {
+          this.wakeLock = wakeLock;
+        }
+      });
     }
     this.loading++;
     const step = this.schedules.shift()!;
-    step.download(3).then(() => {
+    this.emit("start", step);
+    step().then(() => {
       this.loading--;
+      this.emit("end", step);
       this.progress();
     });
     this.progress();
   }
 
-  add(chapters: ChapterModel[]) {
+  add(...steps: DownloadStep[]) {
     if (!window.onbeforeunload) {
       window.onbeforeunload = function () {
         return "Are you sure cancel all download!...";
       };
     }
-    const willAdd = chapters.filter((chapter) => {
-      return Boolean(
-        chapter.status === ChapterStatus.idle ||
-          chapter.status === ChapterStatus.error
-      );
-    });
-    willAdd.forEach((chapter) => {
-      chapter.status = ChapterStatus.waiting;
-      this.schedules.push(chapter);
-    });
-
+    this.schedules.push(...steps);
+    this.emit("add", steps);
     this.progress();
-
-    return willAdd;
   }
 
-  remove(chapters: ChapterModel[]) {
-    const willRemove = chapters.filter(
-      (chapter) => chapter.status === ChapterStatus.waiting
-    );
-    this.schedules = this.schedules.filter((chapter) => {
-      if (willRemove.includes(chapter)) {
-        chapter.status = ChapterStatus.idle;
-        return false;
-      }
-      return true;
-    });
-    return willRemove;
+  remove(...steps: DownloadStep[]) {
+    this.schedules = this.schedules.filter((step) => !steps.includes(step));
+    this.emit("remove", steps);
   }
 }
 
