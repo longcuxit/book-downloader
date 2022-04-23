@@ -16,10 +16,10 @@ declare global {
     parseChapter(content: string): string;
   }
   interface Window {
-    bookDownloaderRegister(
-      element: HTMLElement,
-      props: BookDownloaderProps
-    ): void;
+    BookDownloader: {
+      render(element: HTMLElement, props: BookDownloaderProps): void;
+      _: any;
+    };
   }
 
   class jEpub {

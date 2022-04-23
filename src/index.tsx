@@ -14,10 +14,12 @@ libs.forEach((src) => {
   script.src = src;
   document.head.appendChild(script);
 });
-const register = (container: any, props: any) => {
+const render = (container: any, props: any) => {
   const root = ReactDOM.createRoot(container);
   root.render(<BookDownloader {...props} />);
 };
 
-(register as any)._ = _;
-window.bookDownloaderRegister = register;
+window.BookDownloader = {
+  render,
+  _,
+};

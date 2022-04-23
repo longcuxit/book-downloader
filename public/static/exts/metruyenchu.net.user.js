@@ -41,15 +41,15 @@
 
   await import(PUBLIC_URL + "/static/js/bundle.js");
 
-  var _ = bookDownloaderRegister._;
-  var container = document.createElement("div");
+  const { render, _ } = BookDownloader;
+  const container = document.createElement("div");
   container.className = "mr-3 w-150";
   _.query("#latestChapter").after(container);
 
-  bookDownloaderRegister(container, {
+  render(container, {
     async fetchData() {
-      var bookId = _.query("#truyen-id").value;
-      var info = {
+      const bookId = _.query("#truyen-id").value;
+      const info = {
         i18n: "vi",
         title: _.getText(".story-title"),
         author: _.getText(".info a[href*=tac-gia]"),

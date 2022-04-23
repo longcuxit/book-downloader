@@ -40,9 +40,9 @@
   if (!document.querySelector("#suggest-book")) return;
   await import("https://longcuxit.github.io/book-downloader/build" + "/static/js/bundle.js");
 
-  var isMobile = document.querySelector("#appMobile");
+  const isMobile = document.querySelector("#appMobile");
 
-  var _ = bookDownloaderRegister._;
+  const { render, _ } = BookDownloader;
   var container = document.createElement("div");
   container.className = "mr-3 w-150";
   _.query("#suggest-book").after(container);
@@ -67,7 +67,7 @@
     selectors.chapters = "#chapterList a.media";
   }
 
-  bookDownloaderRegister(container, {
+  render(container, {
     fetchData() {
       var info = {
         i18n: "vi",

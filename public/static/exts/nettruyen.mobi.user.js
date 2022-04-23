@@ -39,12 +39,12 @@
   if (!document.querySelector("#manga-detail")) return;
   await import(PUBLIC_URL + "/static/js/bundle.js");
 
-  var _ = bookDownloaderRegister._;
-  var container = document.createElement("span");
+  const { render, _ } = BookDownloader;
+  const container = document.createElement("span");
   container.className = "ml-3";
   _.query("#init-links").append(container);
 
-  bookDownloaderRegister(container, {
+  render(container, {
     async fetchData() {
       var info = {
         i18n: "vi",
