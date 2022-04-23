@@ -48,7 +48,12 @@ function BookDownloader({ fetchData, parseChapter }: BookDownloaderProps) {
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 9999999,
+        }}
       >
         <Paper
           elevation={3}
