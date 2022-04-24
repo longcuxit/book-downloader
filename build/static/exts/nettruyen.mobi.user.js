@@ -31,7 +31,7 @@
   }
 */
 
-const "https://longcuxit.github.io/book-downloader/build" = "http://localhost:3000";
+// const "https://longcuxit.github.io/book-downloader/build" = "http://localhost:3000";
 
 (async () => {
   "use strict";
