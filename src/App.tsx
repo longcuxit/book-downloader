@@ -79,7 +79,7 @@ function BookDownloader() {
             padding: "16px 0",
             marginX: "auto",
             position: "relative",
-            height: { xs: "100%", md: "auto" },
+            minHeight: { xs: "100%", md: 0 },
           }}
         >
           <IconButton
