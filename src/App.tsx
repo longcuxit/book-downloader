@@ -79,6 +79,7 @@ function BookDownloader() {
             padding: "16px 0",
             marginX: "auto",
             position: "relative",
+            boxSizing: "border-box",
             minHeight: { xs: "100%", md: 0 },
           }}
         >
