@@ -64,7 +64,12 @@ function BookDownloader() {
       sx={{ inset: 0 }}
       onClick={onClickOverlay}
     >
-      <Box width="100%" maxHeight="100%" overflow="auto">
+      <Box
+        width="100%"
+        maxHeight="100%"
+        overflow="auto"
+        height={{ xs: "100%", md: "auto" }}
+      >
         <Paper
           elevation={3}
           className="modal-content"
@@ -74,6 +79,7 @@ function BookDownloader() {
             padding: "16px 0",
             marginX: "auto",
             position: "relative",
+            height: { xs: "100%", md: "auto" },
           }}
         >
           <IconButton
