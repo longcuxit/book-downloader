@@ -31,13 +31,13 @@
   }
 */
 
-// var "https://longcuxit.github.io/book-downloader/build" = "http://localhost:3000";
+const "https://longcuxit.github.io/book-downloader/build" = "http://localhost:3000";
 
 (async () => {
   "use strict";
   const container = document.querySelector("#init-links");
   if (!container) return;
-  await import("https://longcuxit.github.io/book-downloader/build" + "/static/js/bundle.js");
+  await import("https://longcuxit.github.io/book-downloader/build" + "/static/exts/client.js");
 
   const { render, _ } = BookDownloader;
 
@@ -74,5 +74,5 @@
     },
   });
 
-  button.className = "ml-3";
+  button.className = "btn btn-success";
 })();

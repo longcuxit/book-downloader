@@ -38,12 +38,11 @@
   "use strict";
   const container = document.querySelector("#latestChapter")?.parentElement;
   if (!container) return;
-
-  await import(PUBLIC_URL + "/static/js/bundle.js");
+  await import(PUBLIC_URL + "/static/exts/client.js");
 
   const { render, _ } = BookDownloader;
 
-  render(container, {
+  const button = render(container, {
     async fetchData() {
       const bookId = _.query("#truyen-id").value;
       const info = {
@@ -70,7 +69,7 @@
       }
 
       const chapters = await Promise.all(
-        Array.from({ length: getTotalPages() }, async (_, i) => {
+        Array.from({ length: getTotalPages() }, async ($, i) => {
           const url =
             "https://metruyenchu.net/api/services/list-chapter?" +
             ["type=list_chapter", "tid=" + bookId, "page=" + (i + 1)].join("&");
@@ -91,4 +90,6 @@
       return "<div>" + dom.innerHTML.replace("— QUẢNG CÁO —", "") + "</div>";
     },
   });
+
+  button.className = "btn btn-danger btn-block btn-style-1 btn-border";
 })();

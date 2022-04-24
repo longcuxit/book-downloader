@@ -16,7 +16,9 @@ import { Info } from "./Infor";
 import { helper } from "./helper";
 import { control } from "./controller";
 
-const cacheData: Record<string, BookListProps> = {};
+type CacheItem = BookListProps | Promise<DownloadDataProps>;
+
+const cacheData: Record<string, CacheItem> = {};
 
 function BookDownloader() {
   const [props, setProps] = useState<BookListProps>();
@@ -26,19 +28,26 @@ function BookDownloader() {
   // DownloadDataProps
   useEffect(() => {
     return control.effect("initialize", async ({ uid }: { uid: string }) => {
-      if (!cacheData[uid]) {
+      let item = cacheData[uid];
+
+      if (!item) {
         setProps(undefined);
-        const data: DownloadDataProps = await control.request(uid);
+        item = cacheData[uid] = control.request(uid);
+      }
+
+      if (item instanceof Promise) {
+        const data: DownloadDataProps = await item;
         const { info, chapters } = data;
         const cover = await helper.downloadImage(info.cover);
-        cacheData[uid] = {
+        item = cacheData[uid] = {
           info: { ...info, cover },
           chapters: chapters.map((chap) => {
             return new ChapterModel(chap.title, chap.url);
           }),
         };
       }
-      setProps(cacheData[uid]);
+
+      setProps(item);
     });
   }, []);
 

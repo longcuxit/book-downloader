@@ -1,4 +1,5 @@
 window.BookDownloader = ((publicUrl) => {
+  publicUrl = publicUrl.split("static/")[0];
   const modalStyle = {
     position: "fixed",
     inset: 0,
@@ -61,13 +62,13 @@ window.BookDownloader = ((publicUrl) => {
     };
 
     show(data) {
-      document.body.style.overflow = "hidden";
+      document.scrollingElement.style.overflow = "hidden";
       this.modal.style.visibility = "";
       this.iframe.contentWindow.postMessage(data, "*");
     }
 
     hide() {
-      document.body.style.overflow = "";
+      document.scrollingElement.style.overflow = "";
       this.modal.style.visibility = "hidden";
     }
 
@@ -154,4 +155,4 @@ window.BookDownloader = ((publicUrl) => {
     _,
   };
   // eslint-disable-next-line no-undef
-})(PUBLIC_URL);
+})(document.currentScript?.src ?? import.meta.url);
