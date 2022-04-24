@@ -80,7 +80,7 @@ function BookDownloader() {
             marginX: "auto",
             position: "relative",
             boxSizing: "border-box",
-            minHeight: { xs: "100%", md: 0 },
+            minHeight: { xs: "100%", md: 300 },
           }}
         >
           <IconButton
@@ -97,11 +97,12 @@ function BookDownloader() {
             </>
           ) : (
             <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="100%"
-              minHeight={300}
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
             >
               <CircularProgress />
             </Box>
