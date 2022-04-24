@@ -1,6 +1,7 @@
 import EventEmitter from "events";
+import { control } from "../controller";
 import { downloader, DownloadStep } from "../Downloader";
-import { _ } from "../helper";
+import { helper } from "../helper";
 
 export enum ChapterStatus {
   idle = "idle",
@@ -32,11 +33,7 @@ export class ChapterModel extends EventEmitter {
     this._status = status;
   }
 
-  constructor(
-    public title: string,
-    public url: string,
-    public parse: (v: string) => string
-  ) {
+  constructor(public title: string, public url: string) {
     super();
   }
 
@@ -61,17 +58,16 @@ export class ChapterModel extends EventEmitter {
     try {
       this.status = ChapterStatus.loading;
       if (!this.content) {
-        let content = await fetch(this.url).then((res) => res.text());
-        this.content = this.parse(content);
+        this.content = await control.fetchChapter(this.url);
       }
       if (!this.chunks) {
-        const dom = _.stringToDom(this.content)!;
+        const dom = helper.stringToDom(this.content)!;
         this.chunks = Array.from(dom.querySelectorAll("img")).map((img) => {
-          const id = "_" + _.hashString(img.src);
+          const id = "_" + helper.hashString(img.src);
           img.replaceWith(`[img:${id}]`);
 
           const loader = async () => {
-            const data = await _.downloadImage(img.src);
+            const data = await helper.downloadImage(img.src);
             if (data) {
               this.emit("progress", this.progress++);
               this.images[id] = data;
@@ -82,7 +78,7 @@ export class ChapterModel extends EventEmitter {
           };
           return loader;
         });
-        this.content = _.cleanHTML(dom.outerHTML, ["a"]);
+        this.content = helper.cleanHTML(dom.outerHTML, ["a"]);
       }
 
       downloader.add(...this.chunks);

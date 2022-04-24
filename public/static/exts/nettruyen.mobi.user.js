@@ -35,16 +35,13 @@
 
 (async () => {
   "use strict";
-
-  if (!document.querySelector("#manga-detail")) return;
+  const container = document.querySelector("#init-links");
+  if (!container) return;
   await import(PUBLIC_URL + "/static/js/bundle.js");
 
   const { render, _ } = BookDownloader;
-  const container = document.createElement("span");
-  container.className = "ml-3";
-  _.query("#init-links").append(container);
 
-  render(container, {
+  const button = render(container, {
     async fetchData() {
       var info = {
         i18n: "vi",
@@ -76,4 +73,6 @@
       return `<div>${imgs.join("\n")}</div>`;
     },
   });
+
+  button.className = "ml-3";
 })();

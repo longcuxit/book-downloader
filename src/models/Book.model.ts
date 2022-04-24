@@ -1,6 +1,6 @@
 import EventEmitter from "events";
 import { saveAs } from "file-saver";
-import { _ } from "../helper";
+import { helper } from "../helper";
 
 import {
   ChapterModel,
@@ -123,7 +123,7 @@ export class BookModel extends EventEmitter {
         epub.cover(cover);
       }
       saveAs(await epub.generate(), `${info.title}.epub`);
-      await _.delay(500);
+      await helper.delay(500);
     } catch (_) {}
 
     this.emit("saving", false);

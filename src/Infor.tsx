@@ -13,7 +13,7 @@ import useTheme from "@mui/material/styles/useTheme";
 
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
 
-import { _ } from "./helper";
+import { helper } from "./helper";
 import { BookInfo } from "./models/Book.model";
 
 export interface InfoProps {
@@ -32,9 +32,9 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () =>
-        _.imageToBlob(reader.result as string).then((img) =>
-          onImage(img || undefined)
-        );
+        helper
+          .imageToBlob(reader.result as string)
+          .then((img) => onImage(img || undefined));
     },
     [onImage]
   );

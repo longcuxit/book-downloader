@@ -1,33 +1,11 @@
 import EventEmitter from "events";
 import { useEffect, useState } from "react";
 
-export const _ = {
-  query(selector: string, from: HTMLElement | Document = document) {
-    return from.querySelector(selector) as HTMLElement | undefined;
-  },
-
-  queryAll(selector: string, from: HTMLElement | Document = document) {
-    return Array.from(from.querySelectorAll(selector));
-  },
-
-  getText(selector: string, from: HTMLElement | Document = document) {
-    const el = _.query(selector, from);
-    return el?.innerText.trim() ?? "";
-  },
-
+export const helper = {
   stringToDom(html: string, selector?: string) {
     const div = document.createElement("div");
     div.innerHTML = html;
-    return selector ? _.query(selector, div) : div;
-  },
-
-  getAttr(
-    selector: string,
-    attr: string,
-    from: HTMLElement | Document = document
-  ) {
-    const el = _.query(selector, from);
-    return (el as any)?.[attr];
+    return selector ? div.querySelector(selector) : div;
   },
 
   async downloadImage(src?: string) {
@@ -40,7 +18,7 @@ export const _ = {
 
     for await (const url of urls) {
       try {
-        const image = await _.imageToBlob(url);
+        const image = await helper.imageToBlob(url);
         if (image) return image;
       } catch (error) {
         console.log(error);
@@ -76,16 +54,6 @@ export const _ = {
     });
   },
 
-  async waitFor(getter: () => any, time = 100) {
-    const check = async (): Promise<any> => {
-      const result = await Promise.resolve(getter());
-      if (result) return result;
-      await _.delay(time);
-      return check();
-    };
-    return check();
-  },
-
   delay<T = undefined>(time = 0, value?: T) {
     return new Promise<T>((next) => setTimeout(() => next(value as T), time));
   },
@@ -96,19 +64,6 @@ export const _ = {
       clearTimeout(timeOut);
       timeOut = setTimeout(() => call.apply(null, args), time);
     }) as any as T;
-  },
-  linkFormat(link: HTMLLinkElement) {
-    return '<a href="' + link.href + '">' + link.innerText.trim() + "</a>";
-  },
-  tagsFromElements(els: HTMLElement[]) {
-    return els
-      .map((el) => {
-        var text = el.innerText.trim();
-        const link = el.tagName === "A" ? el : (_.query("a", el) as any);
-        if (link) return _.linkFormat(link);
-        return text;
-      })
-      .join(", ");
   },
 
   cleanHTML(html: string, skip: string[] = []) {
@@ -133,7 +88,7 @@ export const useEventEmitter = (emitter: EventEmitter, types: string) => {
     const names = types.split(",");
     const handles: Record<string, (v: any) => void> = {};
     names.forEach((name) => {
-      handles[name] = _.debounce((value: any) => {
+      handles[name] = helper.debounce((value: any) => {
         forceUpdate((old) => {
           return { ...old, [name]: value };
         });

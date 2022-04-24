@@ -1,58 +1,66 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
+import Modal from "@mui/material/Modal";
 
-import DownloadIcon from "@mui/icons-material/Download";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { ChapterModel } from "./models/Chapter.model";
 
 import { BookList, BookListProps } from "./BookList";
 import { Info } from "./Infor";
-import { _ } from "./helper";
+import { helper } from "./helper";
+import { control } from "./controller";
 
-function BookDownloader({ fetchData, parseChapter }: BookDownloaderProps) {
-  const [open, setOpen] = React.useState(false);
-  const handleClose = () => setOpen(false);
-  const handleOpen = () => setOpen(true);
+const cacheData: Record<string, BookListProps> = {};
+
+function BookDownloader() {
   const [props, setProps] = useState<BookListProps>();
   const [image, setImage] = useState<Blob>();
 
+  const handleClose = () => control.send("BookDownload-close");
+  // DownloadDataProps
   useEffect(() => {
-    if (!open || props) return;
-    fetchData().then(async ({ info, chapters }) => {
-      if (!chapters.length) return;
-      const cover = await _.downloadImage(info.cover);
-
-      setProps({
-        info: { ...info, cover },
-        chapters: chapters.map((chap) => {
-          return new ChapterModel(chap.title, chap.url, parseChapter);
-        }),
-      });
+    return control.effect("initialize", async ({ uid }: { uid: string }) => {
+      if (!cacheData[uid]) {
+        setProps(undefined);
+        const data: DownloadDataProps = await control.request(uid);
+        const { info, chapters } = data;
+        const cover = await helper.downloadImage(info.cover);
+        cacheData[uid] = {
+          info: { ...info, cover },
+          chapters: chapters.map((chap) => {
+            return new ChapterModel(chap.title, chap.url);
+          }),
+        };
+      }
+      setProps(cacheData[uid]);
     });
-  }, [fetchData, open, parseChapter, props]);
+  }, []);
 
   return (
-    <>
-      <IconButton id="book-download" onClick={handleOpen}>
-        <DownloadIcon />
-      </IconButton>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 9999999,
+    <Modal
+      open={true}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+      }}
+      onClose={handleClose}
+    >
+      <Box
+        width="100%"
+        maxHeight="100%"
+        overflow="auto"
+        component="div"
+        className="scroll-container"
+        onClick={(e: any) => {
+          if (e.target.classList.contains("scroll-container")) {
+            handleClose();
+          }
         }}
       >
         <Paper
@@ -60,10 +68,9 @@ function BookDownloader({ fetchData, parseChapter }: BookDownloaderProps) {
           sx={{
             maxWidth: "100%",
             width: 600,
-            height: { xs: "100%", md: "auto" },
-            maxHeight: "100%",
             padding: "16px 0",
-            overflow: "auto",
+            marginX: "auto",
+            position: "relative",
           }}
         >
           <IconButton
@@ -90,8 +97,8 @@ function BookDownloader({ fetchData, parseChapter }: BookDownloaderProps) {
             </Box>
           )}
         </Paper>
-      </Modal>
-    </>
+      </Box>
+    </Modal>
   );
 }
 

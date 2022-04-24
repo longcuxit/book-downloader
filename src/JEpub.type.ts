@@ -7,19 +7,9 @@ declare global {
     description?: string;
     tags?: string[];
   }
-  interface BookDownloaderProps {
-    fetchData(): Promise<{
-      info: jEpubInitProps & { cover: string };
-      chapters: { title: string; url: string }[];
-    }>;
-
-    parseChapter(content: string): string;
-  }
-  interface Window {
-    BookDownloader: {
-      render(element: HTMLElement, props: BookDownloaderProps): void;
-      _: any;
-    };
+  interface DownloadDataProps {
+    info: jEpubInitProps & { cover: string };
+    chapters: { title: string; url: string }[];
   }
 
   class jEpub {

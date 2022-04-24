@@ -32,20 +32,17 @@
   }
 */
 
-// var PUBLIC_URL = "http://localhost:3000";
+PUBLIC_URL = "http://localhost:3000";
 
 (async () => {
   "use strict";
-
-  if (!document.querySelector("#suggest-book")) return;
-  await import(PUBLIC_URL + "/static/js/bundle.js");
+  var container = document.querySelector("#suggest-book")?.parentElement;
+  if (!container) return;
+  await import(PUBLIC_URL + "/static/exts/client.js");
 
   const isMobile = document.querySelector("#appMobile");
 
   const { render, _ } = BookDownloader;
-  var container = document.createElement("div");
-  container.className = "mr-3 w-150";
-  _.query("#suggest-book").after(container);
 
   var textSelectors = {
     title: ".media-body h1",
@@ -61,13 +58,12 @@
   };
 
   if (isMobile) {
-    container.className = "col-12";
     textSelectors.title = ".nh-section h1.h6";
     selectors.tags = _.queryAll("ul.list-unstyled", _.query(".nh-section"));
     selectors.chapters = "#chapterList a.media";
   }
 
-  render(container, {
+  const button = render(container, {
     fetchData() {
       var info = {
         i18n: "vi",
@@ -129,11 +125,8 @@
       return "<div>" + dom.innerHTML + "</div>";
     },
   });
-
+  button.className = "btn btn-primary btn-md";
   if (isMobile) {
-    setTimeout(() => {
-      var btn = container.firstElementChild;
-      btn.className = "btn btn-primary btn-md btn-block btn-shadow mt-3";
-    });
+    button.className += " btn-block btn-shadow mt-3 mx-3";
   }
 })();

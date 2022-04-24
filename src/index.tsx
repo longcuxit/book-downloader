@@ -1,7 +1,5 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import BookDownloader from "./App";
-import { _ } from "./helper";
 
 const libs = [
   "https://unpkg.com/jszip@3.2.0/dist/jszip.min.js",
@@ -14,12 +12,6 @@ libs.forEach((src) => {
   script.src = src;
   document.head.appendChild(script);
 });
-const render = (container: any, props: any) => {
-  const root = ReactDOM.createRoot(container);
-  root.render(<BookDownloader {...props} />);
-};
 
-window.BookDownloader = {
-  render,
-  _,
-};
+const root = ReactDOM.createRoot(document.getElementById("root")!);
+root.render(<BookDownloader />);

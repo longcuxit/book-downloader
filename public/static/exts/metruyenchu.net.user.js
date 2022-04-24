@@ -36,15 +36,12 @@
 
 (async () => {
   "use strict";
-
-  if (!document.querySelector("#latestChapter")) return;
+  const container = document.querySelector("#latestChapter")?.parentElement;
+  if (!container) return;
 
   await import(PUBLIC_URL + "/static/js/bundle.js");
 
   const { render, _ } = BookDownloader;
-  const container = document.createElement("div");
-  container.className = "mr-3 w-150";
-  _.query("#latestChapter").after(container);
 
   render(container, {
     async fetchData() {
