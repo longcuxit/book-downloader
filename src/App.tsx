@@ -5,7 +5,6 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
-import Modal from "@mui/material/Modal";
 
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -25,6 +24,11 @@ function BookDownloader() {
   const [image, setImage] = useState<Blob>();
 
   const handleClose = () => control.send("BookDownload-close");
+  const onClickOverlay = (e: any) => {
+    if (!e.target.closest(".modal-content")) {
+      handleClose();
+    }
+  };
   // DownloadDataProps
   useEffect(() => {
     return control.effect("initialize", async ({ uid }: { uid: string }) => {
@@ -52,28 +56,18 @@ function BookDownloader() {
   }, []);
 
   return (
-    <Modal
-      open={true}
-      sx={{
-        display: "flex",
-        alignItems: "center",
-      }}
-      onClose={handleClose}
+    <Box
+      position="fixed"
+      display="flex"
+      alignItems="center"
+      bgcolor="rgba(0,0,0, 0.5)"
+      sx={{ inset: 0 }}
+      onClick={onClickOverlay}
     >
-      <Box
-        width="100%"
-        maxHeight="100%"
-        overflow="auto"
-        component="div"
-        className="scroll-container"
-        onClick={(e: any) => {
-          if (e.target.classList.contains("scroll-container")) {
-            handleClose();
-          }
-        }}
-      >
+      <Box width="100%" maxHeight="100%" overflow="auto">
         <Paper
           elevation={3}
+          className="modal-content"
           sx={{
             maxWidth: "100%",
             width: 600,
@@ -107,7 +101,7 @@ function BookDownloader() {
           )}
         </Paper>
       </Box>
-    </Modal>
+    </Box>
   );
 }
 

@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "https://longcuxit.github.io/book-downloader/build/static/css/main.1967655b.css",
-    "main.js": "https://longcuxit.github.io/book-downloader/build/static/js/main.66f089d1.js",
-    "index.html": "https://longcuxit.github.io/book-downloader/build/index.html",
-    "main.1967655b.css.map": "https://longcuxit.github.io/book-downloader/build/static/css/main.1967655b.css.map",
-    "main.66f089d1.js.map": "https://longcuxit.github.io/book-downloader/build/static/js/main.66f089d1.js.map"
+    "main.css": "/book-downloader/build/static/css/main.1967655b.css",
+    "main.js": "/book-downloader/build/static/js/main.308d8f1f.js",
+    "index.html": "/book-downloader/build/index.html",
+    "main.1967655b.css.map": "/book-downloader/build/static/css/main.1967655b.css.map",
+    "main.308d8f1f.js.map": "/book-downloader/build/static/js/main.308d8f1f.js.map"
   },
   "entrypoints": [
     "static/css/main.1967655b.css",
-    "static/js/main.66f089d1.js"
+    "static/js/main.308d8f1f.js"
   ]
 }
