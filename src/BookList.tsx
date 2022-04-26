@@ -136,11 +136,9 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
             onBlur={({ target }) => {
               setConfig({ ...config, split: +target.value });
             }}
-            onKeyDown={({ code, target }) => {
-              if (code === "Enter") {
-                (target as HTMLInputElement).blur();
-              } else {
-                alert(code);
+            onKeyDown={({ keyCode, target }) => {
+              if (keyCode === 13) {
+                (target as any).blur();
               }
             }}
           />
