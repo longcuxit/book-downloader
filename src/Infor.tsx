@@ -150,7 +150,11 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
               <Typography variant="subtitle1">{info.title}</Typography>
               <Divider sx={{ marginY: 1 }} />
               {info.tags?.map((tag, i) => (
-                <div key={i} dangerouslySetInnerHTML={{ __html: tag }} />
+                <div
+                  key={i}
+                  style={{ fontSize: "0.75rem" }}
+                  dangerouslySetInnerHTML={{ __html: tag }}
+                />
               ))}
               {upSM && (
                 <Box textAlign="justify">
