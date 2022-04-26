@@ -12,3 +12,4 @@
 3. [nettruyen.mobi](https://longcuxit.github.io/book-downloader/build/static/exts/nettruyen.mobi.user.js)
 4. [truyen.tangthuvien.vn Desktop](https://longcuxit.github.io/book-downloader/build/static/exts/truyen.tangthuvien.vn.user.js)
 5. [truyen.tangthuvien.vn Mobile](https://longcuxit.github.io/book-downloader/build/static/exts/m.truyen.tangthuvien.vn.user.js)
+6. [wattpad.vn](https://longcuxit.github.io/book-downloader/build/static/exts/wattpad.vn.user.js)
