@@ -132,6 +132,7 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
             onBlur={({ target }) => {
               setConfig({ ...config, split: +target.value });
             }}
+            onSubmit={({ currentTarget }) => currentTarget.blur()}
           />
           <Box flexGrow={1} />
           <AllButtons books={books} />
