@@ -83,7 +83,7 @@ export const Info = ({ info, image, onImage, onClose }: InfoProps) => {
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Container sx={{ paddingY: 1 }}>
+      <Container sx={{ paddingY: 2 }}>
         <Grid container spacing={1}>
           <Grid item>
             <Box
@@ -164,7 +164,6 @@ export const Info = ({ info, image, onImage, onClose }: InfoProps) => {
           <Grid item flex={1}>
             <Box position="relative" height="100%">
               <Box position="absolute" style={{ inset: 0 }} overflow="auto">
-                <Divider sx={{ marginY: 1 }} />
                 {info.tags?.map((tag, i) => (
                   <Typography
                     key={i}
