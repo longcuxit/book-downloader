@@ -44,41 +44,28 @@
 
   const { render, _ } = BookDownloader;
 
-  var textSelectors = {
-    title: ".media-body h1",
-    author: "a[href*=tac-gia]",
-    publisher: "#nav-intro .bg-yellow-white .h4",
-    description: "#nav-intro .content",
-  };
-
-  var selectors = {
-    cover: "div.nh-thumb.shadow img",
-    tags: _.queryAll(".media-body ul.list-unstyled.mb-4"),
-    chapters: "#chapter-list .nh-section a.media",
-  };
-
-  if (isMobile) {
-    textSelectors.title = ".nh-section h1.h6";
-    selectors.tags = _.queryAll("ul.list-unstyled", _.query(".nh-section"));
-    selectors.chapters = "#chapterList a.media";
-  }
-
   const button = render(container, {
     fetchData() {
       var info = {
         i18n: "vi",
-        cover: _.getAttr(selectors.cover, "src"),
-        tags: selectors.tags.map(function (ul) {
+        title: _.getText(".media-body h1, .nh-section h1.h6"),
+        author: _.getText("a[href*=tac-gia]"),
+        publisher: _.getText("#nav-intro .bg-yellow-white .h4"),
+        description: _.getText("#nav-intro .content"),
+
+        cover: _.getAttr("div.nh-thumb.shadow img", "src"),
+        tags: (isMobile
+          ? _.queryAll("ul.list-unstyled", _.query(".nh-section"))
+          : _.queryAll(".media-body ul.list-unstyled.mb-4")
+        ).map(function (ul) {
           return _.tagsFromElements(_.queryAll("li", ul));
         }),
       };
 
-      Object.entries(textSelectors).forEach((entry) => {
-        info[entry[0]] = _.getText(entry[1]);
-      });
-
       var getChapters = () => {
-        var chapters = _.queryAll(selectors.chapters).map((aTag) => {
+        var chapters = _.queryAll(
+          "#chapter-list .nh-section a.media, #chapterList a.media"
+        ).map((aTag) => {
           return {
             title: _.query(
               ".text-overflow-1-lines",

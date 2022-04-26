@@ -1,5 +1,9 @@
 window.BookDownloader = ((publicUrl) => {
   publicUrl = publicUrl.split("static/")[0];
+
+  // this.wakeLock?.release().then(() => {
+  //   delete this.wakeLock;
+  // });
   const modalStyle = {
     position: "fixed",
     inset: 0,
@@ -15,11 +19,35 @@ window.BookDownloader = ((publicUrl) => {
 
   const batchFetch = {};
 
+  const wakeLock = (() => {
+    let instance = false,
+      timeOut;
+
+    if (!navigator.wakeLock) return () => {};
+
+    return () => {
+      if (!instance) {
+        instance = true;
+        navigator.wakeLock.request("screen").then((wakeLock) => {
+          instance = wakeLock;
+        });
+      }
+      clearTimeout(timeOut);
+      timeOut = setTimeout(() => {
+        if (typeof instance !== "boolean") {
+          instance.release();
+          instance = false;
+        }
+      }, 5000);
+    };
+  })();
+
   const actions = {
     fetch: (data) => fetch(data).then((rs) => rs.blob()),
     fetchChapter: (url) => {
+      wakeLock();
       const [name, index] = url.split("|");
-      if (batchFetch[name]) return batchFetch[name](index).then(parseChapter);
+      if (batchFetch[name]) return batchFetch[name](+index).then(parseChapter);
       fetch(url)
         .then((rs) => rs.text())
         .then(parseChapter);
@@ -145,8 +173,7 @@ window.BookDownloader = ((publicUrl) => {
   return {
     render(
       container,
-      { fetchData, parseChapter: parse, batchChapters },
-      props = {}
+      { fetchData, parseChapter: parse, batchChapters, props = {} }
     ) {
       const btn = document.createElement("button");
       btn.innerHTML = `<svg focusable="false" width="1.4rem" height="1.4rem" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z" /></svg>`;
@@ -157,7 +184,17 @@ window.BookDownloader = ((publicUrl) => {
       const uid = "fetchData-" + ++num;
       actions[uid] = fetchData;
       if (batchChapters) {
-        batchFetch[uid] = function (index) {};
+        actions[uid] = async () => {
+          const data = await fetchData();
+          const { chapters } = data;
+          batchFetch[uid] = (index) => batchChapters(index, chapters);
+          return {
+            ...data,
+            chapters: chapters.map(({ title, url }, index) => {
+              return { title, url: `${uid}|${index}` };
+            }),
+          };
+        };
       }
       btn.addEventListener("click", () => {
         modal.show({ id: "initialize", uid });

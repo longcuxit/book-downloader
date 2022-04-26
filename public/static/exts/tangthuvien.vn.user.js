@@ -40,9 +40,32 @@
   await import(PUBLIC_URL + "/static/exts/client.js");
 
   const { render, _ } = BookDownloader;
+  const bookId = _.query('[name="story_id"]').value;
+
+  const batchChapters = [];
+  const chapFromBatch = async ({ index, loader }) => {
+    return (await loader)[index].outerHTML;
+  };
   const button = render(container, {
+    async batchChapters(index) {
+      const batch = batchChapters[index];
+      if (batch) return chapFromBatch(batch);
+      const loader = fetch(
+        `https://truyen.tangthuvien.vn/get-4-chap?story_id=${bookId}&sort_by_ttv=${
+          index + 1
+        }`
+      )
+        .then((rs) => rs.text())
+        .then((text) => {
+          const dom = _.stringToDom(text);
+          return _.queryAll(".box-chap", dom);
+        });
+      for (let i = 0; i < 4; i++) {
+        batchChapters[index + i] = { index: i, loader };
+      }
+      return chapFromBatch({ index: 0, loader });
+    },
     async fetchData() {
-      const bookId = _.query('meta[name="book_detail"]').content;
       const info = {
         i18n: "vi",
         title: _.getText(".book-info > h1"),
@@ -66,11 +89,20 @@
           }));
         });
       console.log(info, chapters);
-      return { info, chapters, maxChunks: 3 };
+      return { info, chapters };
     },
     parseChapter(content) {
-      const dom = _.stringToDom(content, ".chapter-c-content");
-      return "<div>" + dom.innerHTML + "</div>";
+      return content.replace(/\n/gi, "<br/>").replace(/—{5,}/gi, "<hr>");
     },
+  });
+
+  button.className = "blue-btn";
+  Object.assign(button.style, {
+    marginRight: "-36px",
+    borderWidth: "1px",
+    transform: "translateY(9px)",
+    width: "36px",
+    height: "35px",
+    cursor: "pointer",
   });
 })();

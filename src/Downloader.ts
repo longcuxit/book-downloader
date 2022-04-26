@@ -4,26 +4,12 @@ export type DownloadStep = () => any;
 class Downloader extends EventEmitter {
   schedules: DownloadStep[] = [];
   loading = 0;
-  private wakeLock?: any;
   maxChunks = 3;
 
   private progress() {
-    if (!this.schedules.length) {
-      this.wakeLock?.release().then(() => {
-        delete this.wakeLock;
-      });
-      return;
-    }
+    if (!this.schedules.length) return;
     if (this.loading >= this.maxChunks) return;
-    if (this.loading === 0 && "wakeLock" in navigator) {
-      (navigator as any).wakeLock.request("screen").then((wakeLock: any) => {
-        if (!this.schedules.length) {
-          wakeLock.release();
-        } else {
-          this.wakeLock = wakeLock;
-        }
-      });
-    }
+
     this.loading++;
     const step = this.schedules.shift()!;
     this.emit("start", step);
