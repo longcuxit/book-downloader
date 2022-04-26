@@ -137,7 +137,7 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
               setConfig({ ...config, split: +target.value });
             }}
             onKeyDown={({ keyCode, target }) => {
-              if (keyCode === 13) {
+              if ([13, 27].includes(keyCode)) {
                 (target as any).blur();
               }
             }}
