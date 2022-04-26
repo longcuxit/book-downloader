@@ -167,6 +167,7 @@ export const Info = ({ info, image, onImage, onClose }: InfoProps) => {
                 <Divider sx={{ marginY: 1 }} />
                 {info.tags?.map((tag, i) => (
                   <Typography
+                    key={i}
                     variant="caption"
                     component="div"
                     dangerouslySetInnerHTML={{ __html: tag }}

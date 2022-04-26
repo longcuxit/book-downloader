@@ -109,7 +109,11 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
 
   return (
     <section>
-      <AppBar position="sticky" sx={{ paddingTop: 1 }}>
+      <AppBar
+        position="sticky"
+        component="div"
+        sx={{ paddingTop: 1, backgroundColor: "#f8f9fa" }}
+      >
         <Toolbar variant="dense">
           <TextField
             label="Skip chapters"
