@@ -3,10 +3,7 @@ import "./App.css";
 
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
-
-import CloseIcon from "@mui/icons-material/Close";
 
 import { ChapterModel } from "./models/Chapter.model";
 
@@ -79,23 +76,20 @@ function BookDownloader() {
           sx={{
             maxWidth: "100%",
             width: 600,
-            padding: "16px 0",
             marginX: "auto",
             position: "relative",
             boxSizing: "border-box",
             minHeight: { xs: "100%", md: 300 },
           }}
         >
-          <IconButton
-            onClick={handleClose}
-            size="small"
-            style={{ position: "absolute", top: 0, right: 0 }}
-          >
-            <CloseIcon />
-          </IconButton>
           {props ? (
             <>
-              <Info info={props.info} onImage={setImage} image={image} />
+              <Info
+                info={props.info}
+                onImage={setImage}
+                image={image}
+                onClose={handleClose}
+              />
               <BookList {...props} image={image} />
             </>
           ) : (

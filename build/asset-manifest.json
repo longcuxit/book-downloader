@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/book-downloader/build/static/css/main.1967655b.css",
-    "main.js": "/book-downloader/build/static/js/main.fffedfa3.js",
+    "main.js": "/book-downloader/build/static/js/main.102cfdfb.js",
     "index.html": "/book-downloader/build/index.html",
     "main.1967655b.css.map": "/book-downloader/build/static/css/main.1967655b.css.map",
-    "main.fffedfa3.js.map": "/book-downloader/build/static/js/main.fffedfa3.js.map"
+    "main.102cfdfb.js.map": "/book-downloader/build/static/js/main.102cfdfb.js.map"
   },
   "entrypoints": [
     "static/css/main.1967655b.css",
-    "static/js/main.fffedfa3.js"
+    "static/js/main.102cfdfb.js"
   ]
 }

@@ -108,8 +108,8 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
   useEffect(() => () => books.forEach((book) => book.destroy()), [books]);
 
   return (
-    <>
-      <AppBar position="sticky" sx={{ paddingTop: 1, marginTop: 1 }}>
+    <section>
+      <AppBar position="sticky" sx={{ paddingTop: 1 }}>
         <Toolbar variant="dense">
           <TextField
             label="Skip chapters"
@@ -145,6 +145,6 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
           ))}
         </List>
       </Container>
-    </>
+    </section>
   );
 };
