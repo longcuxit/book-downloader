@@ -136,7 +136,13 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
             onBlur={({ target }) => {
               setConfig({ ...config, split: +target.value });
             }}
-            onSubmit={({ currentTarget }) => currentTarget.blur()}
+            onKeyDown={({ code, target }) => {
+              if (code === "Enter") {
+                (target as HTMLInputElement).blur();
+              } else {
+                alert(code);
+              }
+            }}
           />
           <Box flexGrow={1} />
           <AllButtons books={books} />
