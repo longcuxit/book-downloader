@@ -45,6 +45,7 @@ function BookDownloader() {
         const { info, chapters, maxChunks = 5 } = data;
         downloader.maxChunks = maxChunks;
         const cover = await helper.downloadImage(info.cover);
+        info.description = helper.cleanHTML(info.description ?? "");
         item = cacheData[uid] = {
           info: { ...info, cover },
           chapters: chapters.map((chap) => {

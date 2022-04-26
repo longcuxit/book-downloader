@@ -150,16 +150,20 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
               <Typography variant="subtitle1">{info.title}</Typography>
               <Divider sx={{ marginY: 1 }} />
               {info.tags?.map((tag, i) => (
-                <div
-                  key={i}
-                  style={{ fontSize: "0.75rem" }}
+                <Typography
+                  variant="caption"
+                  component="div"
                   dangerouslySetInnerHTML={{ __html: tag }}
                 />
               ))}
               {upSM && (
                 <Box textAlign="justify">
                   <Divider sx={{ marginY: 1 }} />
-                  <Typography variant="caption">{info.description}</Typography>
+                  <Typography
+                    variant="caption"
+                    component="div"
+                    dangerouslySetInnerHTML={{ __html: info.description ?? "" }}
+                  />
                 </Box>
               )}
             </Box>
@@ -168,7 +172,11 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
         {!upSM && (
           <Grid item xs={12} textAlign="justify">
             <Divider sx={{ marginY: 1 }} />
-            <Typography variant="caption">{info.description}</Typography>
+            <Typography
+              variant="caption"
+              component="div"
+              dangerouslySetInnerHTML={{ __html: info.description ?? "" }}
+            />
           </Grid>
         )}
       </Grid>
