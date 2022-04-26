@@ -42,15 +42,28 @@ window.BookDownloader = ((publicUrl) => {
     };
   })();
 
+  const fetch = (...args) =>
+    window.fetch(...args).then((rs) => {
+      if (!rs.ok) throw rs;
+      return rs;
+    });
+
   const actions = {
     fetch: (data) => fetch(data).then((rs) => rs.blob()),
-    fetchChapter: (url) => {
+    fetchChapter: async (url, retry = 2) => {
       wakeLock();
       const [name, index] = url.split("|");
       if (batchFetch[name]) return batchFetch[name](+index).then(parseChapter);
-      fetch(url)
-        .then((rs) => rs.text())
-        .then(parseChapter);
+      try {
+        const content = await fetch(url).then((rs) => rs.text());
+        return parseChapter(content);
+      } catch (error) {
+        if (retry && error.status >= 500) {
+          return _.delay(1000).then(() => actions.fetchChapter(url, retry - 1));
+        } else {
+          throw error;
+        }
+      }
     },
   };
 
@@ -190,7 +203,7 @@ window.BookDownloader = ((publicUrl) => {
           batchFetch[uid] = (index) => batchChapters(index, chapters);
           return {
             ...data,
-            chapters: chapters.map(({ title, url }, index) => {
+            chapters: chapters.map(({ title }, index) => {
               return { title, url: `${uid}|${index}` };
             }),
           };
