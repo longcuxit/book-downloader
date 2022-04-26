@@ -31,21 +31,13 @@ export const Book = ({ book }: BookProps) => {
         disabled={!!composed.running && !stat.waiting}
         onClick={book.toggleDownload}
       >
+        <Box position="absolute" top={9} bottom={0} right="68%" fontSize={10}>
+          {composed.running || composed.available}
+        </Box>
         {composed.running ? (
           <PauseIcon color="error" />
         ) : composed.progress ? (
-          <>
-            <ReplayIcon color="warning" />
-            <Box
-              position="absolute"
-              top={9}
-              bottom={0}
-              right="68%"
-              fontSize={10}
-            >
-              {stat.error}
-            </Box>
-          </>
+          <ReplayIcon color="warning" />
         ) : (
           <DownloadIcon color="success" />
         )}
@@ -56,6 +48,9 @@ export const Book = ({ book }: BookProps) => {
         aria-label="Save"
         onClick={() => book.save()}
       >
+        <Box position="absolute" top={9} bottom={0} right="75%" fontSize={10}>
+          {stat.success}
+        </Box>
         {saving ? <CircularProgress size={20} /> : <SaveIcon />}
       </IconButton>
       {Boolean(composed.progress) && (

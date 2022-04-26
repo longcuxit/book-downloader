@@ -1,12 +1,11 @@
 import EventEmitter from "events";
 
-const maxLoading = 6;
-
 export type DownloadStep = () => any;
 class Downloader extends EventEmitter {
   schedules: DownloadStep[] = [];
   loading = 0;
   private wakeLock?: any;
+  maxChunks = 3;
 
   private progress() {
     if (!this.schedules.length) {
@@ -15,7 +14,7 @@ class Downloader extends EventEmitter {
       });
       return;
     }
-    if (this.loading >= maxLoading) return;
+    if (this.loading >= this.maxChunks) return;
     if (this.loading === 0 && "wakeLock" in navigator) {
       (navigator as any).wakeLock.request("screen").then((wakeLock: any) => {
         if (!this.schedules.length) {

@@ -51,6 +51,7 @@ export class ChapterModel extends EventEmitter {
         downloader.remove(...this.chunks);
         delete this.chunks;
       }
+      this.status = ChapterStatus.idle;
     }
   }
 

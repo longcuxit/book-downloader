@@ -13,12 +13,17 @@ window.BookDownloader = ((publicUrl) => {
 
   let parseChapter = String;
 
+  const batchFetch = {};
+
   const actions = {
     fetch: (data) => fetch(data).then((rs) => rs.blob()),
-    fetchChapter: (data) =>
-      fetch(data)
+    fetchChapter: (url) => {
+      const [name, index] = url.split("|");
+      if (batchFetch[name]) return batchFetch[name](index).then(parseChapter);
+      fetch(url)
         .then((rs) => rs.text())
-        .then(parseChapter),
+        .then(parseChapter);
+    },
   };
 
   window.addEventListener("message", async ({ data, source }) => {
@@ -138,7 +143,11 @@ window.BookDownloader = ((publicUrl) => {
   let num = 0;
 
   return {
-    render(container, { fetchData, parseChapter: parse }, props = {}) {
+    render(
+      container,
+      { fetchData, parseChapter: parse, batchChapters },
+      props = {}
+    ) {
       const btn = document.createElement("button");
       btn.innerHTML = `<svg focusable="false" width="1.4rem" height="1.4rem" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z" /></svg>`;
       Object.assign(btn, { type: "button" }, props);
@@ -147,6 +156,9 @@ window.BookDownloader = ((publicUrl) => {
 
       const uid = "fetchData-" + ++num;
       actions[uid] = fetchData;
+      if (batchChapters) {
+        batchFetch[uid] = function (index) {};
+      }
       btn.addEventListener("click", () => {
         modal.show({ id: "initialize", uid });
       });

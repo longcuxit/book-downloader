@@ -14,6 +14,7 @@ import { BookList, BookListProps } from "./BookList";
 import { Info } from "./Infor";
 import { helper } from "./helper";
 import { control } from "./controller";
+import { downloader } from "./Downloader";
 
 type CacheItem = BookListProps | Promise<DownloadDataProps>;
 
@@ -41,7 +42,8 @@ function BookDownloader() {
 
       if (item instanceof Promise) {
         const data: DownloadDataProps = await item;
-        const { info, chapters } = data;
+        const { info, chapters, maxChunks = 5 } = data;
+        downloader.maxChunks = maxChunks;
         const cover = await helper.downloadImage(info.cover);
         item = cacheData[uid] = {
           info: { ...info, cover },

@@ -10,6 +10,7 @@ declare global {
   interface DownloadDataProps {
     info: jEpubInitProps & { cover: string };
     chapters: { title: string; url: string }[];
+    maxChunks?: number;
   }
 
   class jEpub {
