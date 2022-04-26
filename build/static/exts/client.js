@@ -140,6 +140,7 @@ window.BookDownloader = ((publicUrl) => {
     },
 
     stringToDom(html, selector) {
+      html = html.replace(/ src=/gi, " data-src=");
       const div = document.createElement("div");
       div.innerHTML = html;
       return selector ? _.query(selector, div) : div;

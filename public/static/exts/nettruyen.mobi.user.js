@@ -48,7 +48,7 @@
         title: _.getText("#manga-detail > h1"),
         author: _.getText(".list-info .info-item:nth-child(2) a"),
         publisher: "",
-        description: _.getText(".detail-content > p"),
+        description: _.query(".detail-content > p").outerHTML,
         cover: _.getAttr(".info-image img", "src"),
         tags: [
           _.tagsFromElements(

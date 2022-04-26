@@ -71,7 +71,7 @@
         title: _.getText(".book-info > h1"),
         author: _.getText(".tag > a[href*=tac-gia]"),
         publisher: _.getText(".book-state li:first-child .tags"),
-        description: _.getText(".book-intro > p"),
+        description: _.query(".book-intro > p").outerHTML,
         cover: _.getAttr("#bookImg>img", "src"),
         tags: [
           _.tagsFromElements(_.queryAll(".book-info > .tag > *")),

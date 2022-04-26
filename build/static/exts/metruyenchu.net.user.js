@@ -50,7 +50,7 @@
         title: _.getText(".story-title"),
         author: _.getText(".info a[href*=tac-gia]"),
         publisher: "",
-        description: _.getText(".desc-text"),
+        description: _.query(".desc-text").outerHTML,
         cover: _.getAttr(".col-info-desc .book>img", "src"),
         tags: [
           _.tagsFromElements(

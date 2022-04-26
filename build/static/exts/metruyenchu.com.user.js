@@ -51,8 +51,7 @@
         title: _.getText(".media-body h1, .nh-section h1.h6"),
         author: _.getText("a[href*=tac-gia]"),
         publisher: _.getText("#nav-intro .bg-yellow-white .h4"),
-        description: _.getText("#nav-intro .content"),
-
+        description: _.query("#nav-intro .content").outerHTML,
         cover: _.getAttr("div.nh-thumb.shadow img", "src"),
         tags: (isMobile
           ? _.queryAll("ul.list-unstyled", _.query(".nh-section"))

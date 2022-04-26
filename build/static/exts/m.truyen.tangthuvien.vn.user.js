@@ -55,7 +55,7 @@
         title: _.getText(".detail > h4"),
         author: _.getText(".book-author-vv .book-title"),
         publisher: _.getText(".book-fans-cell .fans-name"),
-        description: _.getText(".book-introduce"),
+        description: _.query(".book-introduce").outerHTML,
         cover: _.getAttr(".book-detail>img", "src"),
         tags: [
           _.tagsFromElements(

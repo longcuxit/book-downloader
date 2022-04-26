@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 export const helper = {
   stringToDom(html: string, selector?: string) {
+    html = html.replace(/ src=/gi, " data-src=");
     const div = document.createElement("div");
     div.innerHTML = html;
     return selector ? div.querySelector(selector) : div;

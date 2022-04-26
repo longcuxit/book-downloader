@@ -64,11 +64,12 @@ export class ChapterModel extends EventEmitter {
       if (!this.chunks) {
         const dom = helper.stringToDom(this.content)!;
         this.chunks = Array.from(dom.querySelectorAll("img")).map((img) => {
-          const id = "_" + helper.hashString(img.src);
+          const src = img.getAttribute("data-src")!;
+          const id = "_" + helper.hashString(src);
           img.replaceWith(`[img:${id}]`);
 
           const loader = async () => {
-            const data = await helper.downloadImage(img.src);
+            const data = await helper.downloadImage(src);
             if (data) {
               this.emit("progress", this.progress++);
               this.images[id] = data;
