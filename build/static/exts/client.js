@@ -24,7 +24,25 @@ window.BookDownloader = ((publicUrl) => {
     };
   })();
 
+  const delay = (() => {
+    let last = Date.now();
+    let delay = 0;
+    return () => {
+      const current = Date.now();
+      if (current - last > delay + 500) {
+        delay += 100;
+      } else {
+        delay -= 20;
+      }
+      delay = Math.max(delay, 0);
+      last = current;
+      return _.delay(delay);
+    };
+  })();
+
   const fetch = async (...args) => {
+    wakeLock();
+    await delay();
     const rs = await window.fetch(...args);
     if (!rs.ok) throw rs;
     return rs;
@@ -35,9 +53,9 @@ window.BookDownloader = ((publicUrl) => {
   const actions = {
     fetch: (data) => fetch(data).then((rs) => rs.blob()),
     fetchChapter: async (request, retry = 2) => {
-      wakeLock();
       try {
         const content = await fetch(request.request).then((rs) => rs.text());
+
         return getChapters[request.bookId](content, request.request);
       } catch (error) {
         if (retry && error.status >= 500) {
@@ -101,6 +119,7 @@ window.BookDownloader = ((publicUrl) => {
   })();
 
   const _ = {
+    fetch,
     query(selector, from = document) {
       return from.querySelector(selector);
     },

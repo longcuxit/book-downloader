@@ -62,7 +62,8 @@
       };
 
       function getTotalPages() {
-        var lastPage = _.query(".pagination li:last-child");
+        const lis = _.queryAll(".pagination li:not(.page-nav)");
+        var lastPage = lis[lis.length - 1];
         if (!lastPage) return 1;
         var url = _.getAttr("a", "href", lastPage);
         return +url.split("=")[1];
@@ -82,12 +83,12 @@
           }));
         })
       );
-
+      console.log(chapters);
       return { info, chapters: chapters.flat() };
     },
     getChapter(content) {
       const dom = _.stringToDom(content, "#chapter-c");
-      return "<div>" + dom.innerHTML.replace("— QUẢNG CÁO —", "") + "</div>";
+      return dom.outerHTML.replace("— QUẢNG CÁO —", "");
     },
   });
 

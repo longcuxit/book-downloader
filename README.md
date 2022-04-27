@@ -14,3 +14,9 @@
 5. [truyen.tangthuvien.vn Mobile](https://longcuxit.github.io/book-downloader/build/static/exts/m.truyen.tangthuvien.vn.user.js)
 6. [wattpad.vn](https://longcuxit.github.io/book-downloader/build/static/exts/wattpad.vn.user.js)
 7. [truyenfull.vn](https://longcuxit.github.io/book-downloader/build/static/exts/truyenfull.vn.user.js)
+8. [dtruyen.com](https://longcuxit.github.io/book-downloader/build/static/exts/dtruyen.com.user.js) -- Slowly
+
+## Contact
+
+1. [Facebook messenger](http://m.me/longcuxit)
+2. [Zalo messenger](http://zalo.me/0986518558)
