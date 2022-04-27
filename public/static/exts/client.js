@@ -151,16 +151,6 @@ window.BookDownloader = ((publicUrl) => {
       return el?.[attr];
     },
 
-    async waitFor(getter, time = 100) {
-      const check = async () => {
-        const result = await Promise.resolve(getter());
-        if (result) return result;
-        await _.delay(time);
-        return check();
-      };
-      return check();
-    },
-
     delay(time = 0, value) {
       return new Promise((next) => setTimeout(() => next(value), time));
     },

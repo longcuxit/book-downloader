@@ -45,7 +45,7 @@
   const { render, _ } = BookDownloader;
 
   const button = render(container, {
-    fetchData() {
+    async fetchData() {
       var info = {
         i18n: "vi",
         title: _.getText(".media-body h1, .nh-section h1.h6"),
@@ -61,19 +61,22 @@
         }),
       };
 
-      var getChapters = () => {
-        var chapters = _.queryAll(
-          "#chapter-list .nh-section a.media, #chapterList a.media"
-        ).map((aTag) => {
-          return {
-            title: _.query(
-              ".text-overflow-1-lines",
-              aTag
-            ).firstChild.textContent.trim(),
-            url: aTag.href,
-          };
-        });
-        if (chapters.length) return chapters;
+      var getChapters = async () => {
+        while (true) {
+          var chapters = _.queryAll(
+            "#chapter-list .nh-section a.media, #chapterList a.media"
+          ).map((aTag) => {
+            return {
+              title: _.query(
+                ".text-overflow-1-lines",
+                aTag
+              ).firstChild.textContent.trim(),
+              url: aTag.href,
+            };
+          });
+          if (chapters.length) return chapters;
+          await _.delay(100);
+        }
       };
 
       if (isMobile) {
@@ -81,8 +84,7 @@
 
         getChapters = ((query) => {
           return async () => {
-            let chapters = query();
-            if (!chapters) return;
+            let chapters = await query();
 
             const li = _.query(".pagination li:last-child");
             if (li) {
@@ -90,7 +92,7 @@
               while (!li.className.includes("disabled")) {
                 btn.click();
                 await _.delay();
-                chapters = chapters.concat(query());
+                chapters = chapters.concat(await query());
               }
             }
             return chapters;
@@ -100,10 +102,7 @@
         _.query("#nav-tab-chap").click();
       }
 
-      console.log(info);
-      return _.waitFor(getChapters).then((chapters) => {
-        return { info: info, chapters: chapters };
-      });
+      return { info: info, chapters: await getChapters() };
     },
     parseChapter(content) {
       const dom = _.stringToDom(content, "#js-read__content");

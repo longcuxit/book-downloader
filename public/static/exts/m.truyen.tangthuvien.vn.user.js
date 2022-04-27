@@ -56,7 +56,7 @@
         author: _.getText(".book-author-vv .book-title"),
         publisher: _.getText(".book-fans-cell .fans-name"),
         description: _.query(".book-introduce").outerHTML.replace(
-          "\n",
+          /\n/gi,
           "<br/>"
         ),
         cover: _.getAttr(".book-detail>img", "src"),
@@ -68,21 +68,23 @@
         ],
       };
       const chaptersUrl = `https://m.truyen.tangthuvien.vn/danh-sach-chuong/${bookId}`;
-      const chapters = await fetch(chaptersUrl)
-        .then((rs) => rs.text())
-        .then((text) => {
-          const list = _.stringToDom(
-            text,
-            ".body-container .chapters:last-child"
-          );
-          return _.queryAll("a", list).map((aTag, index) => ({
-            title: aTag.innerText.trim(),
-            url: `https://m.truyen.tangthuvien.vn/doc-truyen/${bookId}/chuong-${
-              index + 1
-            }`,
-          }));
-        });
-      console.log(info, chapters);
+      const getChapters = () =>
+        fetch(chaptersUrl)
+          .then((rs) => rs.text())
+          .then((text) => {
+            const list = _.stringToDom(
+              text,
+              ".body-container .chapters:last-child"
+            );
+            return _.queryAll("a", list).map((aTag, index) => ({
+              title: aTag.innerText.trim(),
+              url: `https://m.truyen.tangthuvien.vn/doc-truyen/${bookId}/chuong-${
+                index + 1
+              }`,
+            }));
+          })
+          .catch(() => getChapters());
+      const chapters = await getChapters();
       return { info, chapters, maxChunks: 2 };
     },
     parseChapter(content) {
