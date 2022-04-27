@@ -55,6 +55,8 @@ export class BookModel extends EventEmitter {
     return { available, running, progress, buffer };
   }
 
+  private file: any;
+
   constructor(public info: BookInfo, public chapters: ChapterModel[]) {
     super();
 
@@ -74,6 +76,7 @@ export class BookModel extends EventEmitter {
 
   private onChapterStatus = ({ from, to }: ChapterStatusChange) => {
     const { stat } = this;
+    this.file = null;
     stat[from] -= 1;
     stat[to] += 1;
     this.emit("stat", { ...stat });
@@ -99,37 +102,41 @@ export class BookModel extends EventEmitter {
     if (!this.stat.success) return;
     this.emit("saving", true);
     const { cover, href, ...info } = this.info;
-    const tags = [`<a href="${href}">${href}</a>`, ...(info.tags ?? [])];
-    const epub = new jEpub().init({
-      ...info,
-      tags: [tags.join("<br/>")],
-      description: `<br/>${info.description}`,
-    });
 
-    await Promise.all(
-      this.chapters.map(async ({ title, content, images, url }) => {
-        Object.entries(images).forEach(([key, data]) => epub.image(data, key));
-        if (!content) {
-          content = `Not content!!! <br/><br/><a href="${url}">${url}</a>`;
-        } else {
-          content = content.replace(/\[img:(.+)\]/gi, "<%= image['$1']%>");
-        }
-        epub.add(title, content);
-      })
-    );
+    if (!this.file) {
+      await helper.delay(100);
+      const tags = [`<a href="${href}">${href}</a>`, ...(info.tags ?? [])];
+      const epub = new jEpub().init({
+        ...info,
+        tags: [tags.join("<br/>")],
+        description: `<br/>${info.description}`,
+      });
 
-    try {
-      if (cover) {
-        epub.cover(cover);
-      }
-      saveAs(await epub.generate(), `${info.title}.epub`);
-      await helper.delay(500);
-    } catch (_) {}
+      await Promise.all(
+        this.chapters.map(async ({ title, content, images, url }) => {
+          Object.entries(images).forEach(([key, data]) =>
+            epub.image(data, key)
+          );
+          if (!content) {
+            content = `Not content!!! <br/><br/><a href="${url}">${url}</a>`;
+          } else {
+            content = content.replace(/\[img:(.+)\]/gi, "<%= image['$1']%>");
+          }
+          epub.add(title, content);
+        })
+      );
 
+      if (cover) epub.cover(cover);
+      this.file = await epub.generate();
+    }
+
+    saveAs(this.file, `${info.title}.epub`);
+    await helper.delay(500);
     this.emit("saving", false);
   }
 
   destroy() {
+    this.file = null;
     this.chapters.forEach((chapter) => {
       chapter.off("status", this.onChapterStatus);
       chapter.off("progress", this.onChapterProgress);
