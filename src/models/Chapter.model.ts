@@ -1,4 +1,5 @@
 import EventEmitter from "events";
+import { saveAs } from "file-saver";
 import { control } from "../controller";
 import { downloader, DownloadStep } from "../Downloader";
 import { helper } from "../helper";
@@ -65,9 +66,13 @@ export class ChapterModel extends EventEmitter {
         const dom = helper.stringToDom(this.content)!;
         Array.from(dom.querySelectorAll("img")).forEach((img) => {
           const src = img.getAttribute("data-src")!;
-          const a = document.createElement("a");
-          a.href = src;
-          img.replaceWith(a);
+          saveAs(src);
+          // const a = document.createElement("a");
+          // a.href = src;
+          // a.innerText = src;
+          // img.replaceWith(a);
+          // a.after(document.createElement("br"));
+          // img.src = src;
         });
         this.chunks = [];
         // this.chunks = Array.from(dom.querySelectorAll("img")).map((img) => {
@@ -87,8 +92,12 @@ export class ChapterModel extends EventEmitter {
         //   };
         //   return loader;
         // });
-        this.content = helper.cleanHTML(dom.outerHTML, ["a", "hr"]);
+        this.content = helper.cleanHTML(
+          dom.outerHTML.replace(/ data-src=/gi, " src="),
+          ["a", "hr", "img"]
+        );
       }
+      console.log(this.content);
 
       downloader.add(...this.chunks);
 

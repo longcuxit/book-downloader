@@ -13,8 +13,8 @@ export const helper = {
     if (!src) return;
     const urls: string[] = [
       `https://api.allorigins.win/raw?url=${encodeURI(src)}`,
+      `https://api.codetabs.com/v1/proxy/?quest=${encodeURI(src)}`,
       `https://cors-anywhere.herokuapp.com/${src}`,
-      src,
     ];
 
     for await (const url of urls) {
