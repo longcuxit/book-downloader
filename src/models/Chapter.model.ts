@@ -95,7 +95,6 @@ export class ChapterModel extends EventEmitter {
           ["a", "hr", "img"]
         );
       }
-      console.log(this.content);
 
       downloader.add(...this.chunks);
 
