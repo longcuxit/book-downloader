@@ -4,6 +4,12 @@ import "./App.css";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import CircularProgress from "@mui/material/CircularProgress";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
 
 import { ChapterModel } from "./models/Chapter.model";
 
@@ -82,28 +88,44 @@ function BookDownloader() {
             minHeight: { xs: "100%", md: 300 },
           }}
         >
-          {props ? (
-            <>
-              <Info
-                info={props.info}
-                onImage={setImage}
-                image={image}
-                onClose={handleClose}
-              />
-              <BookList {...props} image={image} />
-            </>
-          ) : (
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-              }}
-            >
-              <CircularProgress />
-            </Box>
-          )}
+          <section>
+            <AppBar position="sticky">
+              <Toolbar variant="dense">
+                <Typography
+                  variant="subtitle1"
+                  component="div"
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  sx={{ flexGrow: 1 }}
+                >
+                  {props?.info.title}
+                </Typography>
+
+                <IconButton onClick={handleClose} color="inherit">
+                  <CloseIcon />
+                </IconButton>
+              </Toolbar>
+            </AppBar>
+
+            {props ? (
+              <>
+                <Info info={props.info} onImage={setImage} image={image} />
+                <BookList {...props} image={image} />
+              </>
+            ) : (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            )}
+          </section>
         </Paper>
       </Box>
     </Box>
