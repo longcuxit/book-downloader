@@ -65,7 +65,9 @@ export class ChapterModel extends EventEmitter {
         const dom = helper.stringToDom(this.content)!;
         Array.from(dom.querySelectorAll("img")).forEach((img) => {
           const src = img.getAttribute("data-src")!;
-          img.replaceWith(`<a href=${src}></a>`);
+          const a = document.createElement("a");
+          a.href = src;
+          img.replaceWith(a);
         });
         this.chunks = [];
         // this.chunks = Array.from(dom.querySelectorAll("img")).map((img) => {
