@@ -18,6 +18,7 @@ export interface BookStatCompose {
 }
 
 export interface BookInfo extends jEpubInitProps {
+  href: string;
   cover?: Blob;
 }
 
@@ -97,8 +98,7 @@ export class BookModel extends EventEmitter {
   async save() {
     if (!this.stat.success) return;
     this.emit("saving", true);
-    const { cover, ...info } = this.info;
-    const { href } = window.location;
+    const { cover, href, ...info } = this.info;
     const tags = [`<a href="${href}">${href}</a>`, ...(info.tags ?? [])];
     const epub = new jEpub().init({
       ...info,

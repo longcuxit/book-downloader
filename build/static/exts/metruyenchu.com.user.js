@@ -104,7 +104,7 @@
 
       return { info: info, chapters: await getChapters() };
     },
-    parseChapter(content) {
+    getChapter(content) {
       const dom = _.stringToDom(content, "#js-read__content");
       _.queryAll(".pt-3.text-center", dom).forEach((div) => div.remove());
       return "<div>" + dom.innerHTML + "</div>";

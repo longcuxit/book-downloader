@@ -74,7 +74,7 @@
 
       return { info, chapters: listChaps.flat() };
     },
-    parseChapter(content) {
+    getChapter(content) {
       const dom = _.stringToDom(content, ".container1 > p");
       _.queryAll("ins, script", dom).forEach((tag) => tag.remove());
       return dom.outerHTML;

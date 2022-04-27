@@ -66,7 +66,7 @@
 
       return { info, chapters: chapters.reverse() };
     },
-    parseChapter(content) {
+    getChapter(content) {
       const dom = _.stringToDom(content, ".reading-content");
       const imgs = _.queryAll("noscript", dom).map((tag) => tag.innerHTML);
 

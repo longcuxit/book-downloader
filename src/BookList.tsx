@@ -136,9 +136,10 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
             onBlur={({ target }) => {
               setConfig({ ...config, split: +target.value });
             }}
-            onKeyDown={({ keyCode, target }) => {
-              if ([13, 27].includes(keyCode)) {
-                (target as any).blur();
+            onKeyDown={(e) => {
+              if ([13, 27].includes(e.keyCode)) {
+                e.stopPropagation();
+                (e.target as any).blur();
               }
             }}
           />

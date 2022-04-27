@@ -27,20 +27,23 @@ function BookDownloader() {
   const [props, setProps] = useState<BookListProps>();
   const [image, setImage] = useState<Blob>();
 
-  const handleClose = () => control.send("BookDownload-close");
-  const onClickOverlay = (e: any) => {
-    if (!e.target.closest(".modal-content")) {
-      handleClose();
-    }
-  };
-  // DownloadDataProps
   useEffect(() => {
-    return control.effect("initialize", async ({ uid }: { uid: string }) => {
-      let item = cacheData[uid];
+    const handle = (e: KeyboardEvent) => {
+      if (e.keyCode === 27) control.closeModal();
+    };
+    document.addEventListener("keydown", handle);
+    return () => {
+      document.removeEventListener("keydown", handle);
+    };
+  }, []);
 
+  useEffect(() => {
+    return control.effect("initialize", async ({ href }: { href: string }) => {
+      let item = cacheData[href];
+      window.focus();
       if (!item) {
         setProps(undefined);
-        item = cacheData[uid] = control.request(uid);
+        item = cacheData[href] = control.request(href);
       }
 
       if (item instanceof Promise) {
@@ -49,10 +52,14 @@ function BookDownloader() {
         downloader.maxChunks = maxChunks;
         const cover = await helper.downloadImage(info.cover);
         info.description = helper.cleanHTML(info.description ?? "");
-        item = cacheData[uid] = {
-          info: { ...info, cover },
-          chapters: chapters.map((chap) => {
-            return new ChapterModel(chap.title, chap.url);
+        item = cacheData[href] = {
+          info: { ...info, cover, href: href },
+          chapters: chapters.map((chap, index) => {
+            return new ChapterModel(
+              href,
+              chap.title,
+              chap.url ?? helper.base64URL(index.toString())
+            );
           }),
         };
       }
@@ -68,7 +75,11 @@ function BookDownloader() {
       alignItems="center"
       bgcolor="rgba(0,0,0, 0.5)"
       sx={{ inset: 0 }}
-      onClick={onClickOverlay}
+      onClick={({ target }) => {
+        if (!(target as any).closest(".modal-content")) {
+          control.closeModal();
+        }
+      }}
     >
       <Box
         width="100%"
@@ -102,7 +113,7 @@ function BookDownloader() {
                   {props?.info.title}
                 </Typography>
 
-                <IconButton onClick={handleClose} color="inherit">
+                <IconButton onClick={control.closeModal} color="inherit">
                   <CloseIcon />
                 </IconButton>
               </Toolbar>

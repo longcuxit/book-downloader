@@ -33,7 +33,7 @@ export class ChapterModel extends EventEmitter {
     this._status = status;
   }
 
-  constructor(public title: string, public url: string) {
+  constructor(public bookId: string, public title: string, public url: string) {
     super();
   }
 
@@ -59,7 +59,7 @@ export class ChapterModel extends EventEmitter {
     try {
       this.status = ChapterStatus.loading;
       if (!this.content) {
-        this.content = await control.fetchChapter(this.url);
+        this.content = await control.fetchChapter(this.bookId, this.url);
       }
       if (!this.chunks) {
         const dom = helper.stringToDom(this.content)!;

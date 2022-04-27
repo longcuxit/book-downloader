@@ -42,28 +42,33 @@
   const { render, _ } = BookDownloader;
   const bookId = _.query('[name="story_id"]').value;
 
+  const ids = [];
   const batchChapters = [];
   const chapFromBatch = async ({ index, loader }) => {
-    return (await loader)[index].outerHTML;
+    return (await loader)[index].outerHTML
+      .replace(/\n/gi, "<br/>")
+      .replace(/—{5,}/gi, "<hr>");
   };
   const button = render(container, {
-    async batchChapters(index) {
+    async getChapter(index) {
+      index = +index;
+      const id = ids[index];
       const batch = batchChapters[index];
       if (batch) return chapFromBatch(batch);
-      const loader = fetch(
-        `https://truyen.tangthuvien.vn/get-4-chap?story_id=${bookId}&sort_by_ttv=${
-          index + 1
-        }`
-      )
-        .then((rs) => rs.text())
-        .then((text) => {
-          const dom = _.stringToDom(text);
-          return _.queryAll(".box-chap", dom);
-        });
+      const loader = (async () => {
+        const url = `https://truyen.tangthuvien.vn/get-4-chap?story_id=${bookId}&sort_by_ttv=${id}`;
+        const rs = await fetch(url);
+        const dom = _.stringToDom(await rs.text());
+        return _.queryAll(".box-chap", dom);
+      })();
       for (let i = 0; i < 4; i++) {
         batchChapters[index + i] = { index: i, loader };
       }
-      return chapFromBatch({ index: 0, loader });
+      const content = await chapFromBatch({ index: 0, loader });
+      if (index === 41) {
+        console.log(content);
+      }
+      return content;
     },
     async fetchData() {
       const info = {
@@ -83,16 +88,16 @@
         .then((rs) => rs.text())
         .then((text) => {
           const list = _.stringToDom(text, "ul");
-          return _.queryAll("a", list).map((aTag) => ({
-            title: aTag.innerText.trim(),
-            url: aTag.href,
-          }));
+          return _.queryAll("a", list).map((aTag) => {
+            const match = aTag.href.match(/\/((\d+)-)?chuong-(\d+(-\d+)?)$/i);
+            let id = +match[3].replace("-", ".");
+            if (match[2]) ids[ids.length - 1] -= 1;
+            ids.push(id);
+            return { title: aTag.innerText.trim() };
+          });
         });
-      console.log(info, chapters);
+      console.log(info, chapters, ids);
       return { info, chapters };
-    },
-    parseChapter(content) {
-      return content.replace(/\n/gi, "<br/>").replace(/—{5,}/gi, "<hr>");
     },
   });
 

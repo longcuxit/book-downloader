@@ -55,6 +55,10 @@ export const helper = {
     });
   },
 
+  base64URL(value: string) {
+    return `data:text;base64,${btoa(value)}`;
+  },
+
   delay<T = undefined>(time = 0, value?: T) {
     return new Promise<T>((next) => setTimeout(() => next(value as T), time));
   },

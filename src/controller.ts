@@ -24,6 +24,10 @@ class Controller extends EventEmitter {
     window.parent.postMessage(msg, "*");
   }
 
+  closeModal = () => {
+    this.send("BookDownloader-close");
+  };
+
   request<T>(action: string, request?: any) {
     const id = uid();
 
@@ -40,8 +44,8 @@ class Controller extends EventEmitter {
     return this.request<Blob>("fetch", request);
   }
 
-  fetchChapter(request: Request | string) {
-    return this.request<string>("fetchChapter", request);
+  fetchChapter(bookId: string, request: Request | string) {
+    return this.request<string>("fetchChapter", { bookId, request });
   }
 
   effect(

@@ -85,7 +85,7 @@
 
       return { info, chapters: chapters.flat() };
     },
-    parseChapter(content) {
+    getChapter(content) {
       const dom = _.stringToDom(content, "#chapter-c");
       return "<div>" + dom.innerHTML.replace("— QUẢNG CÁO —", "") + "</div>";
     },
