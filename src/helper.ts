@@ -76,7 +76,7 @@ export const helper = {
 
     html = html.replace(/<[^>]*>/gi, (match) => {
       if (skip.find((tag) => match.startsWith(tag))) {
-        return match.replace(/ .+>/, ">");
+        return match;
       }
       return "<br/>";
     });
