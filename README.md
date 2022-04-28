@@ -2,8 +2,8 @@
 
 ## Required
 
-1. [Install Tampermonkey for desktop browse](https://www.tampermonkey.net/){:target="\_blank"}
-2. [Install Kiwi browse for Android](https://play.google.com/store/apps/details?id=com.kiwibrowser.browser&hl=vi&gl=US){:target="\_blank"} then [Install Tampermonkey for Kiwi browser](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo){:target="\_blank"}
+1. Install [Tampermonkey](https://www.tampermonkey.net/){:target="\_blank"} for desktop browse
+2. Install [Kiwi](https://play.google.com/store/apps/details?id=com.kiwibrowser.browser&hl=vi&gl=US){:target="\_blank"} or [Firefox](https://play.google.com/store/apps/details?id=org.mozilla.firefox&hl=vi&gl=US){:target="\_blank"} browse for Android. After that Install [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo){:target="\_blank"}
 
 [How to install and use Tampermonkey](https://www.youtube.com/watch?v=8tyjJD65zws&ab_channel=Tampermonkey){:target="\_blank"}
 
