@@ -76,7 +76,8 @@
       console.log(info, chapters);
       return { info, chapters, maxChunks: 1 };
     },
-    async getChapter(content) {
+    async getChapter({ url }) {
+      const content = await _.fetch(url).then((rs) => rs.text());
       const dom = _.stringToDom(content, "#chapter-content");
       return dom.outerHTML;
     },

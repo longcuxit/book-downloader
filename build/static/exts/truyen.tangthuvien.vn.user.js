@@ -50,7 +50,7 @@
       .replace(/—{5,}/gi, "<hr>");
   };
   const button = render(container, {
-    async getChapter(index) {
+    async getChapter({ index }) {
       index = +index;
       const id = ids[index];
       const batch = batchChapters[index];

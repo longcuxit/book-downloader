@@ -74,7 +74,8 @@
 
       return { info, chapters: listChaps.flat() };
     },
-    getChapter(content) {
+    async getChapter({ url }) {
+      const content = await _.fetch(url).then((rs) => rs.text());
       const dom = _.stringToDom(content, ".container1 > p");
       _.queryAll("ins, script", dom).forEach((tag) => tag.remove());
       return dom.outerHTML;

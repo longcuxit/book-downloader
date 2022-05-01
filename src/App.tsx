@@ -49,17 +49,18 @@ function BookDownloader() {
       if (item instanceof Promise) {
         const data: DownloadDataProps = await item;
         const { info, chapters, maxChunks = 5 } = data;
+        let { image = "link" } = data;
         downloader.maxChunks = maxChunks;
-        const cover = await helper.downloadImage(info.cover);
+        let cover = (await helper.imageToBlob(info.cover)) ?? undefined;
+        if (!cover) {
+          cover = await helper.downloadImage(info.cover);
+          if (image === "download") image = "embed";
+        }
         info.description = helper.cleanHTML(info.description ?? "");
         item = cacheData[href] = {
           info: { ...info, cover, href: href },
           chapters: chapters.map((chap, index) => {
-            return new ChapterModel(
-              href,
-              chap.title,
-              chap.url ?? helper.base64URL(index.toString())
-            );
+            return new ChapterModel(chap, image);
           }),
         };
       }

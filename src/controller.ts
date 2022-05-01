@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import { ChapterProps } from "./models/Chapter.model";
 
 type MessageResponse<T = any> = MessageEvent<{
   id: string;
@@ -44,8 +45,8 @@ class Controller extends EventEmitter {
     return this.request<Blob>("fetch", request);
   }
 
-  fetchChapter(bookId: string, request: Request | string) {
-    return this.request<string>("fetchChapter", { bookId, request });
+  fetchChapter(props: ChapterProps) {
+    return this.request<string>("fetchChapter", props);
   }
 
   effect(

@@ -113,16 +113,20 @@ export class BookModel extends EventEmitter {
       });
 
       await Promise.all(
-        this.chapters.map(async ({ title, content, images, url }) => {
+        this.chapters.map(async ({ props, content, images }) => {
           Object.entries(images).forEach(([key, data]) =>
             epub.image(data, key)
           );
           if (!content) {
-            content = `Not content!!! <br/><br/><a href="${url}">${url}</a>`;
+            content = `Not content!!! <br/><br/><pre>${JSON.stringify(
+              props,
+              undefined,
+              4
+            )}</pre>`;
           } else {
             content = content.replace(/\[img:(.+)\]/gi, "<%= image['$1']%>");
           }
-          epub.add(title, content);
+          epub.add(props.title, content);
         })
       );
 

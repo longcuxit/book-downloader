@@ -86,7 +86,8 @@
       console.log(chapters);
       return { info, chapters: chapters.flat() };
     },
-    getChapter(content) {
+    async getChapter({ url }) {
+      const content = await _.fetch(url).then((rs) => rs.text());
       const dom = _.stringToDom(content, "#chapter-c");
       return dom.outerHTML.replace("— QUẢNG CÁO —", "");
     },

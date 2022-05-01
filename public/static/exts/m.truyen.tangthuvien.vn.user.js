@@ -87,7 +87,8 @@
       const chapters = await getChapters();
       return { info, chapters, maxChunks: 2 };
     },
-    getChapter(content) {
+    async getChapter({ url }) {
+      let content = await _.fetch(url).then((rs) => rs.text());
       const dom = _.stringToDom(content, ".chap-c");
       content = _.queryAll(".content-block", dom)
         .map((p) => p.outerHTML)

@@ -104,7 +104,8 @@
 
       return { info: info, chapters: await getChapters() };
     },
-    getChapter(content) {
+    async getChapter({ url }) {
+      const content = await _.fetch(url).then((rs) => rs.text());
       const dom = _.stringToDom(content, "#js-read__content");
       _.queryAll(".pt-3.text-center", dom).forEach((div) => div.remove());
       return "<div>" + dom.innerHTML + "</div>";

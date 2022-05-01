@@ -31,8 +31,6 @@
   }
 */
 
-// const PUBLIC_URL = "http://localhost:3000";
-
 (async () => {
   "use strict";
   const container = document.querySelector("#init-links");
@@ -64,9 +62,10 @@
         url: aTag.href,
       }));
 
-      return { info, chapters: chapters.reverse() };
+      return { info, chapters: chapters.reverse(), image: "download" };
     },
-    getChapter(content) {
+    async getChapter({ url }) {
+      const content = await _.fetch(url).then((rs) => rs.text());
       const dom = _.stringToDom(content, ".reading-content");
       const imgs = _.queryAll("noscript", dom).map((tag) => tag.innerHTML);
 

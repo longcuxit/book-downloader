@@ -48,15 +48,13 @@ window.BookDownloader = ((publicUrl) => {
     return rs;
   };
 
-  const getChapters = {};
+  let fetchChapter;
 
   const actions = {
     fetch: (data) => fetch(data).then((rs) => rs.blob()),
     fetchChapter: async (request, retry = 2) => {
       try {
-        const content = await fetch(request.request).then((rs) => rs.text());
-
-        return getChapters[request.bookId](content, request.request);
+        return fetchChapter(request);
       } catch (error) {
         if (retry && error.status >= 500) {
           return _.delay(1000).then(() =>
@@ -173,7 +171,7 @@ window.BookDownloader = ((publicUrl) => {
       container.appendChild(btn);
 
       actions[href] = fetchData;
-      getChapters[href] = getChapter;
+      fetchChapter = getChapter;
       btn.addEventListener("click", () => {
         modal.show({ id: "initialize", href });
       });

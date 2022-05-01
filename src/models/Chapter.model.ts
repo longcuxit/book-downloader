@@ -16,6 +16,7 @@ export type ChapterStatusChange = {
   to: ChapterStatus;
 };
 
+export type ChapterProps = { title: string } & Record<string, any>;
 export class ChapterModel extends EventEmitter {
   _status = ChapterStatus.idle;
   content?: string;
@@ -33,7 +34,7 @@ export class ChapterModel extends EventEmitter {
     this._status = status;
   }
 
-  constructor(public bookId: string, public title: string, public url: string) {
+  constructor(public props: ChapterProps, public image: ImageFormat) {
     super();
   }
 
@@ -59,37 +60,41 @@ export class ChapterModel extends EventEmitter {
     try {
       this.status = ChapterStatus.loading;
       if (!this.content) {
-        this.content = await control.fetchChapter(this.bookId, this.url);
+        this.content = await control.fetchChapter(this.props);
       }
       if (!this.chunks) {
         const dom = helper.stringToDom(this.content)!;
-        // Array.from(dom.querySelectorAll("img")).forEach((img) => {
-        //   const src = img.getAttribute("data-src")!;
-        // const a = document.createElement("a");
-        // a.href = src;
-        // a.innerText = src;
-        // img.replaceWith(a);
-        // a.after(document.createElement("br"));
-        // img.src = src;
-        // });
         this.chunks = [];
-        // this.chunks = Array.from(dom.querySelectorAll("img")).map((img) => {
-        //   const src = img.getAttribute("data-src")!;
-        //   const id = "_" + helper.hashString(src);
-        //   img.replaceWith(`[img:${id}]`);
+        if (this.image === "download") {
+          this.chunks = Array.from(dom.querySelectorAll("img")).map((img) => {
+            const src = img.getAttribute("data-src")!;
+            const id = "_" + helper.hashString(src);
+            img.replaceWith(`[img:${id}]`);
 
-        //   const loader = async () => {
-        //     const data = await helper.downloadImage(src);
-        //     if (data) {
-        //       this.emit("progress", this.progress++);
-        //       this.images[id] = data;
-        //       if (this.chunks!.length === this.progress) {
-        //         this.status = ChapterStatus.success;
-        //       }
-        //     }
-        //   };
-        //   return loader;
-        // });
+            const loader = async () => {
+              const data = await helper.imageToBlob(src);
+              if (data) {
+                this.emit("progress", this.progress++);
+                this.images[id] = data;
+                if (this.chunks!.length === this.progress) {
+                  this.status = ChapterStatus.success;
+                }
+              }
+            };
+            return loader;
+          });
+        } else if (this.image === "link") {
+          Array.from(dom.querySelectorAll("img")).forEach((img) => {
+            const src = img.getAttribute("data-src")!;
+            const a = document.createElement("a");
+            a.href = src;
+            a.innerText = src;
+            img.replaceWith(a);
+            a.after(document.createElement("br"));
+            img.src = src;
+          });
+        } else {
+        }
         this.content = helper.cleanHTML(
           dom.outerHTML.replace(/ data-src=/gi, " src="),
           ["a", "hr", "img"]

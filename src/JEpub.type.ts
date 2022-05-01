@@ -7,10 +7,14 @@ declare global {
     description?: string;
     tags?: string[];
   }
+
+  type ImageFormat = "remove" | "link" | "download" | "embed";
+
   interface DownloadDataProps {
     info: jEpubInitProps & { cover: string };
     chapters: { title: string; url?: string }[];
     maxChunks?: number;
+    image?: ImageFormat;
   }
 
   class jEpub {
