@@ -37,7 +37,7 @@
   "use strict";
   const container = document.querySelector("#story-detail .actions");
   if (!container) return;
-  await import(PUBLIC_URL + "/static/exts/client.js");
+  await import(PUBLIC_URL + "/static/client.js");
 
   const { render, _ } = BookDownloader;
 

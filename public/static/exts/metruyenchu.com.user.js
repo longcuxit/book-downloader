@@ -38,7 +38,7 @@
   "use strict";
   var container = document.querySelector("#suggest-book")?.parentElement;
   if (!container) return;
-  await import(PUBLIC_URL + "/static/exts/client.js");
+  await import(PUBLIC_URL + "/static/client.js");
 
   const isMobile = document.querySelector("#appMobile");
 

@@ -38,7 +38,7 @@
   let container =
     document.querySelector("#btnReadBook")?.parentElement.parentElement;
   if (!container) return;
-  await import(PUBLIC_URL + "/static/exts/client.js");
+  await import(PUBLIC_URL + "/static/client.js");
 
   const li = document.createElement("li");
   li.className = "btn-group-cell";

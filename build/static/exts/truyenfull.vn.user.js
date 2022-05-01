@@ -40,7 +40,7 @@
   let div = document.createElement("div");
   container.prepend(div);
   container = div;
-  await import("https://longcuxit.github.io/book-downloader/build" + "/static/exts/client.js");
+  await import("https://longcuxit.github.io/book-downloader/build" + "/static/client.js");
 
   const { render, _ } = BookDownloader;
 

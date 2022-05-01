@@ -35,7 +35,7 @@
   "use strict";
   const container = document.querySelector("#init-links");
   if (!container) return;
-  await import("https://longcuxit.github.io/book-downloader/build" + "/static/exts/client.js");
+  await import("https://longcuxit.github.io/book-downloader/build" + "/static/client.js");
 
   const { render, _ } = BookDownloader;
 

@@ -40,7 +40,7 @@
   let div = document.createElement("div");
   container.prepend(div);
   container = div;
-  await import(PUBLIC_URL + "/static/exts/client.js");
+  await import(PUBLIC_URL + "/static/client.js");
 
   const { render, _ } = BookDownloader;
 
