@@ -2,16 +2,12 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
 import CircularProgress from "@mui/material/CircularProgress";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import DialogContentText from "@mui/material/DialogContentText";
-
-import CloseIcon from "@mui/icons-material/Close";
-import IconButton from "@mui/material/IconButton";
 
 import { ChapterModel } from "./models/Chapter.model";
 
@@ -52,21 +48,33 @@ const confirmUnblock = {
     </DialogContentText>
   ),
 };
+const activeTab = () => {
+  return new Promise<chrome.tabs.Tab>((next) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) =>
+      next(tab)
+    );
+  });
+};
+//"/static/client.js", "/static/metruyenchu.ebook.js"
+const executeScript = (src: string) => {
+  return new Promise<any>(async (next) => {
+    const { id } = await activeTab();
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: id! },
+        files: [src],
+      },
+      ([{ result }]) => next(result)
+    );
+  });
+};
+
+activeTab().then(({ id }) => {});
 
 function BookDownloader() {
   const [props, setProps] = useState<BookListProps>();
   const [image, setImage] = useState<Blob>();
   const confirmDialog = useConfirmDialog();
-
-  useEffect(() => {
-    const handle = (e: KeyboardEvent) => {
-      if (e.keyCode === 27) control.closeModal();
-    };
-    document.addEventListener("keydown", handle);
-    return () => {
-      document.removeEventListener("keydown", handle);
-    };
-  }, [confirmDialog]);
 
   useEffect(() => {
     return control.effect("initialize", async ({ href }: { href: string }) => {
@@ -109,74 +117,40 @@ function BookDownloader() {
   }, [confirmDialog]);
 
   return (
-    <Box
-      position="fixed"
-      display="flex"
-      alignItems="center"
-      bgcolor="rgba(0,0,0, 0.5)"
-      sx={{ inset: 0 }}
-      onClick={({ target }) => {
-        if (!(target as any).closest(".MuiPaper-root")) {
-          control.closeModal();
-        }
-      }}
-    >
-      <Box
-        width="100%"
-        maxHeight="100%"
-        overflow="auto"
-        height={{ xs: "100%", md: "auto" }}
-      >
-        <Paper
-          elevation={3}
+    <>
+      <AppBar position="sticky">
+        <Toolbar variant="dense">
+          <Typography
+            variant="subtitle1"
+            component="div"
+            whiteSpace="nowrap"
+            overflow="hidden"
+            textOverflow="ellipsis"
+            sx={{ flexGrow: 1 }}
+          >
+            {props?.info.title}
+          </Typography>
+        </Toolbar>
+      </AppBar>
+
+      {props ? (
+        <>
+          <Info info={props.info} onImage={setImage} image={image} />
+          <BookList {...props} image={image} />
+        </>
+      ) : (
+        <Box
           sx={{
-            maxWidth: "100%",
-            width: 600,
-            marginX: "auto",
-            position: "relative",
-            boxSizing: "border-box",
-            minHeight: { xs: "100%", md: 300 },
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
           }}
         >
-          <AppBar position="sticky">
-            <Toolbar variant="dense">
-              <Typography
-                variant="subtitle1"
-                component="div"
-                whiteSpace="nowrap"
-                overflow="hidden"
-                textOverflow="ellipsis"
-                sx={{ flexGrow: 1 }}
-              >
-                {props?.info.title}
-              </Typography>
-
-              <IconButton onClick={control.closeModal} color="inherit">
-                <CloseIcon />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-
-          {props ? (
-            <>
-              <Info info={props.info} onImage={setImage} image={image} />
-              <BookList {...props} image={image} />
-            </>
-          ) : (
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-              }}
-            >
-              <CircularProgress />
-            </Box>
-          )}
-        </Paper>
-      </Box>
-    </Box>
+          <CircularProgress />
+        </Box>
+      )}
+    </>
   );
 }
 

@@ -1,183 +1,108 @@
-window.BookDownloader = ((publicUrl) => {
-  publicUrl = publicUrl.split("static/")[0];
+window.ebook =
+  window.ebook ||
+  (() => {
+    const _ = {
+      query(selector, from = document) {
+        return from.querySelector(selector);
+      },
 
-  const wakeLock = (() => {
-    let instance = false,
-      timeOut;
+      queryAll(selector, from = document) {
+        return Array.from(from.querySelectorAll(selector));
+      },
 
-    if (!navigator.wakeLock) return () => {};
+      text(selector, from = document) {
+        const el = _.query(selector, from);
+        return el?.innerText.trim() ?? "";
+      },
 
-    return () => {
-      if (!instance) {
-        instance = true;
-        navigator.wakeLock.request("screen").then((wakeLock) => {
-          instance = wakeLock;
-        });
-      }
-      clearTimeout(timeOut);
-      timeOut = setTimeout(() => {
-        if (typeof instance !== "boolean") {
-          instance.release();
-          instance = false;
-        }
-      }, 5000);
+      toDom(html, selector) {
+        html = html.replace(/ src=/gi, " data-src=");
+        const div = document.createElement("div");
+        div.innerHTML = html;
+        return selector ? _.query(selector, div) : div;
+      },
+
+      delay(time = 0, value) {
+        return new Promise((next) => setTimeout(() => next(value), time));
+      },
+
+      link(link) {
+        return '<a href="' + link.href + '">' + link.innerText.trim() + "</a>";
+      },
+      tags(els) {
+        return els
+          .map((el) => {
+            var text = el.innerText.trim();
+            const link = el.tagName === "A" ? el : _.query("a", el);
+            if (link) return _.link(link);
+            return text;
+          })
+          .join(", ");
+      },
     };
-  })();
 
-  const delay = (() => {
-    let last = Date.now();
-    let delay = 0;
-    return () => {
-      const current = Date.now();
-      if (current - last > delay + 500) {
-        delay += 100;
-      } else {
-        delay -= 20;
-      }
-      delay = Math.max(delay, 0);
-      last = current;
-      return _.delay(delay);
-    };
-  })();
+    const getChapters = {};
 
-  const fetch = async (...args) => {
-    wakeLock();
-    await delay();
-    const rs = await window.fetch(...args);
-    if (!rs.ok) throw rs;
-    return rs;
-  };
+    const actions = {
+      fetch: (data) => fetch(data).then((rs) => rs.blob()),
+      fetchChapter: async (request, retry = 2) => {
+        try {
+          const content = await fetch(request.request).then((rs) => rs.text());
 
-  let fetchChapter;
-
-  const actions = {
-    fetch: (data) => fetch(data).then((rs) => rs.blob()),
-    fetchChapter: async (request, retry = 2) => {
-      try {
-        return fetchChapter(request);
-      } catch (error) {
-        if (retry && error.status >= 500) {
-          return _.delay(1000).then(() =>
-            actions.fetchChapter(request, retry - 1)
-          );
-        } else {
-          throw error;
+          return getChapters[request.bookId](content, request.request);
+        } catch (error) {
+          if (retry && error.status >= 500) {
+            return _.delay(1000).then(() =>
+              actions.fetchChapter(request, retry - 1)
+            );
+          } else {
+            throw error;
+          }
         }
-      }
-    },
-  };
+      },
+    };
 
-  window.addEventListener("message", async ({ data, source }) => {
-    if (data.action) {
-      let response;
-      try {
-        response = await Promise.resolve(actions[data.action](data.args));
-      } catch (error) {
-        response = error;
-      }
-      source.postMessage({ id: data.id, response }, "*");
-    }
-  });
-
-  const modal = (() => {
-    const { scrollingElement, body } = document;
-    const iframe = document.createElement("iframe");
-    const modal = document.createElement("div");
-    modal.appendChild(iframe);
-    body.appendChild(modal);
-
-    iframe.src = publicUrl;
-    Object.assign(iframe.style, { border: "none" });
-    Object.assign(modal.style, {
-      position: "fixed",
-      inset: 0,
-      zIndex: 9999999,
-      display: "none",
-    });
-
-    iframe.width = "100%";
-    iframe.height = "100%";
-
-    function show(data) {
-      scrollingElement.style.overflow = "hidden";
-      Object.assign(modal.style, { display: "" });
-      iframe.contentWindow.postMessage(data, "*");
-    }
-
-    function hide() {
-      scrollingElement.style.overflow = "";
-      Object.assign(modal.style, { display: "none" });
-    }
-
-    window.addEventListener("message", ({ data }) => {
-      if (data === "BookDownloader-close") hide();
-    });
-
-    return { show, hide };
-  })();
-
-  const _ = {
-    fetch,
-    query(selector, from = document) {
-      return from.querySelector(selector);
-    },
-
-    queryAll(selector, from = document) {
-      return Array.from(from.querySelectorAll(selector));
-    },
-
-    getText(selector, from = document) {
-      const el = _.query(selector, from);
-      return el?.innerText.trim() ?? "";
-    },
-
-    stringToDom(html, selector) {
-      html = html.replace(/ src=/gi, " data-src=");
-      const div = document.createElement("div");
-      div.innerHTML = html;
-      return selector ? _.query(selector, div) : div;
-    },
-
-    getAttr(selector, attr, from = document) {
-      const el = _.query(selector, from);
-      return el?.[attr];
-    },
-
-    delay(time = 0, value) {
-      return new Promise((next) => setTimeout(() => next(value), time));
-    },
-
-    linkFormat(link) {
-      return '<a href="' + link.href + '">' + link.innerText.trim() + "</a>";
-    },
-    tagsFromElements(els) {
-      return els
-        .map((el) => {
-          var text = el.innerText.trim();
-          const link = el.tagName === "A" ? el : _.query("a", el);
-          if (link) return _.linkFormat(link);
-          return text;
-        })
-        .join(", ");
-    },
-  };
-
-  return {
-    render(container, { fetchData, getChapter, props = {}, href }) {
-      href = href || window.location.href;
-      const btn = document.createElement("button");
-      btn.innerHTML = `<svg focusable="false" width="1.4rem" height="1.4rem" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z" /></svg>`;
-      Object.assign(btn, { type: "button" }, props);
-      container.appendChild(btn);
-
-      actions[href] = fetchData;
-      fetchChapter = getChapter;
-      btn.addEventListener("click", () => {
-        modal.show({ id: "initialize", href });
+    // eslint-disable-next-line no-undef
+    chrome.runtime.onConnect.addListener((port) => {
+      console.log(port);
+      fetch(
+        "https://static.cdnno.com/poster/dinh-cap-khi-van-lang-le-tu-luyen-ngan-nam/300.jpg?1614159439"
+      );
+      port.onMessage.addListener(async (data, port) => {
+        console.log(data, port);
+        if (data.action) {
+          let response;
+          try {
+            response = await Promise.resolve(actions[data.action](data.args));
+          } catch (error) {
+            response = error;
+          }
+          port.postMessage({ id: data.id, response });
+        }
       });
-      return btn;
-    },
-    _,
-  };
-  // eslint-disable-next-line no-undef
-})(document.currentScript?.src ?? import.meta.url);
+    });
+
+    // chrome.runtime.onMessage.addListener(async (data, sender, sendResponse) => {
+    //   if (data.action) {
+    //     let response;
+    //     try {
+    //       response = await Promise.resolve(actions[data.action](data.args));
+    //     } catch (error) {
+    //       response = error;
+    //     }
+    //     sendResponse(response);
+    //   }
+    // });
+
+    const register = ({ getChapters, getInfo, getChapter, href }) => {
+      href = href || window.location.href;
+      actions[href] = async () => {
+        return { info: await getInfo(), chapters: await getChapters() };
+      };
+      getChapters[href] = getChapter;
+
+      return { href };
+    };
+
+    return Object.assign(register, _);
+  })();

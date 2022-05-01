@@ -12,22 +12,42 @@ const uid = (() => {
 })();
 
 class Controller extends EventEmitter {
-  constructor() {
-    super();
+  port?: chrome.runtime.Port;
 
-    window.addEventListener("message", ({ data, source }: MessageResponse) => {
-      if (typeof data !== "object") return;
-      if (source !== window && data.id) this.emit(data.id, data);
+  get active() {
+    return new Promise<chrome.tabs.Tab>((next) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) =>
+        next(tab)
+      );
     });
   }
 
-  send(msg: any) {
-    window.parent.postMessage(msg, "*");
+  async connect() {
+    if (!this.port) {
+      await this.active.then((tab) => {
+        return new Promise<void>((next) => {
+          const port = chrome.tabs.connect(tab.id!, { name: "ebook" });
+          port.onMessage.addListener((data, port) => {
+            console.log(port, data);
+            if (typeof data !== "object") return;
+            if (data.id) this.emit(data.id, data);
+          });
+          port.onDisconnect.addListener(() => {
+            console.log("disconnect");
+            delete this.port;
+          });
+          this.port = port;
+          next();
+        });
+      });
+    }
+    return this.port!;
   }
 
-  closeModal = () => {
-    this.send("BookDownloader-close");
-  };
+  async send(msg: any) {
+    const port = await this.connect();
+    port.postMessage(msg);
+  }
 
   request<T>(action: string, request?: any) {
     const id = uid();
@@ -42,7 +62,7 @@ class Controller extends EventEmitter {
   }
 
   fetch(request: Request | string) {
-    return this.request<Blob>("fetch", request);
+    return fetch(request).then((rs) => rs.blob());
   }
 
   fetchChapter(props: ChapterProps) {

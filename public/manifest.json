@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Book Downloader",
+  "description": "Book downloader for website",
+  "version": "1.0",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Book Downloader"
+  },
+  "host_permissions": ["*://*/*"],
+  "permissions": [
+    "storage",
+    "downloads",
+    "webRequest",
+    "webRequestBlocking",
+    "declarativeNetRequest",
+    "contextMenus",
+    "scripting"
+  ],
+  "icons": {
+    "16": "static/icons/16.png",
+    "32": "static/icons/32.png",
+    "48": "static/icons/48.png",
+    "64": "static/icons/64.png",
+    "128": "static/icons/128.png",
+    "256": "static/icons/256.png",
+    "512": "static/icons/512.png"
+  },
+  "homepage_url": "https://add0n.com/access-control.html",
+  "background": ["static/cors.js"]
+}

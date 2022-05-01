@@ -21,9 +21,10 @@ export const helper = {
     transfer: (url: string) => Promise<Blob | undefined>
   ) {
     const urls: string[] = [
-      `https://api.allorigins.win/raw?url=${encodeURI(src)}`,
-      `https://api.codetabs.com/v1/proxy/?quest=${encodeURI(src)}`,
-      `https://cors-anywhere.herokuapp.com/${src}`,
+      src,
+      // `https://api.allorigins.win/raw?url=${encodeURI(src)}`,
+      // `https://api.codetabs.com/v1/proxy/?quest=${encodeURI(src)}`,
+      // `https://cors-anywhere.herokuapp.com/${src}`,
     ];
 
     for await (const url of urls) {
