@@ -78,9 +78,7 @@
             );
             return _.queryAll("a", list).map((aTag, index) => ({
               title: aTag.innerText.trim(),
-              url: `https://m.truyen.tangthuvien.vn/doc-truyen/${bookId}/chuong-${
-                index + 1
-              }`,
+              url: aTag.href,
             }));
           })
           .catch(() => getChapters());
