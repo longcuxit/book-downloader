@@ -28,7 +28,7 @@ export const Book = ({ book }: BookProps) => {
       <IconButton
         aria-label="Download"
         hidden={composed.progress === 100}
-        disabled={!!composed.running && !stat.waiting}
+        disabled={!composed.available && !composed.running}
         onClick={book.toggleDownload}
       >
         <Box position="absolute" top={9} bottom={0} right="68%" fontSize={10}>

@@ -47,12 +47,13 @@ export class ChapterModel extends EventEmitter {
 
   stopDownload() {
     if ([ChapterStatus.waiting, ChapterStatus.loading].includes(this.status)) {
-      downloader.remove(this.download);
-      if (this.chunks) {
+      if (this.chunks?.length) {
+        downloader.remove(this.download);
         downloader.remove(...this.chunks);
-        delete this.chunks;
+        this.status = ChapterStatus.idle;
+      } else if (this.status === ChapterStatus.waiting) {
+        downloader.remove(this.download);
       }
-      this.status = ChapterStatus.idle;
     }
   }
 
@@ -65,6 +66,7 @@ export class ChapterModel extends EventEmitter {
       if (!this.chunks) {
         const dom = helper.stringToDom(this.content)!;
         this.chunks = [];
+
         if (this.image === "download") {
           this.chunks = Array.from(dom.querySelectorAll("img")).map((img) => {
             const src = img.getAttribute("data-src")!;
@@ -72,6 +74,7 @@ export class ChapterModel extends EventEmitter {
             img.replaceWith(`[img:${id}]`);
 
             const loader = async () => {
+              if (this.images[id]) return;
               control.send({ action: "running" });
               const data = await helper.imageToBlob(src);
               if (data) {
@@ -84,6 +87,7 @@ export class ChapterModel extends EventEmitter {
             };
             return loader;
           });
+          this.content = helper.cleanHTML(dom.outerHTML, ["a", "hr"]);
         } else if (this.image === "link") {
           Array.from(dom.querySelectorAll("img")).forEach((img) => {
             const src = img.getAttribute("data-src")!;
@@ -94,12 +98,15 @@ export class ChapterModel extends EventEmitter {
             a.after(document.createElement("br"));
             img.src = src;
           });
+          this.content = helper.cleanHTML(dom.outerHTML, ["a", "hr"]);
+        } else if (this.image === "embed") {
+          this.content = helper.cleanHTML(
+            dom.outerHTML.replace(/ data-src=/gi, " src="),
+            ["a", "hr", "img"]
+          );
         } else {
+          this.content = helper.cleanHTML(dom.outerHTML, ["a", "hr"]);
         }
-        this.content = helper.cleanHTML(
-          dom.outerHTML.replace(/ data-src=/gi, " src="),
-          ["a", "hr", "img"]
-        );
       }
 
       downloader.add(...this.chunks);
