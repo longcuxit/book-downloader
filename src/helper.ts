@@ -2,7 +2,6 @@ import EventEmitter from "events";
 import {
   ComponentType,
   createElement,
-  PureComponent,
   ReactElement,
   ReactNode,
   useEffect,
@@ -17,8 +16,10 @@ export const helper = {
     return selector ? div.querySelector(selector) : div;
   },
 
-  async downloadImage(src?: string) {
-    if (!src) return;
+  async noCors(
+    src: string,
+    transfer: (url: string) => Promise<Blob | undefined>
+  ) {
     const urls: string[] = [
       `https://api.allorigins.win/raw?url=${encodeURI(src)}`,
       `https://api.codetabs.com/v1/proxy/?quest=${encodeURI(src)}`,
@@ -27,8 +28,8 @@ export const helper = {
 
     for await (const url of urls) {
       try {
-        const image = await helper.imageToBlob(url);
-        if (image) return image;
+        const blob = await transfer(url);
+        if (blob) return blob;
       } catch (error) {
         console.log(error);
       }
@@ -47,7 +48,7 @@ export const helper = {
   },
 
   imageToBlob(src: string, type: string = "image/webp") {
-    return new Promise<Blob | null>((next) => {
+    return new Promise<Blob | undefined>((next) => {
       var img = new Image();
       img.crossOrigin = "Anonymous";
       img.onload = () => {
@@ -56,9 +57,9 @@ export const helper = {
         canvas.height = img.naturalHeight;
         canvas.width = img.naturalWidth;
         ctx.drawImage(img, 0, 0);
-        canvas.toBlob(next, type);
+        canvas.toBlob((blob) => next(blob ?? undefined), type);
       };
-      img.onerror = () => next(null);
+      img.onerror = () => next(undefined);
       img.src = src;
     });
   },
