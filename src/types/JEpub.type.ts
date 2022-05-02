@@ -16,6 +16,10 @@ declare global {
     maxChunks?: number;
     image?: ImageFormat;
   }
+  interface BookInfo extends jEpubInitProps {
+    href: string;
+    cover?: Blob;
+  }
 
   class jEpub {
     init(props: jEpubInitProps): jEpub;

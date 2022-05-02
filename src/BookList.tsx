@@ -16,7 +16,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { ChapterModel } from "./models/Chapter.model";
 
 import { Book } from "./Book";
-import { BookInfo, BookModel } from "./models/Book.model";
+import { BookModel } from "./models/Book.model";
 import { useEventEmitter } from "./helper";
 
 const AllButtons = ({ books }: { books: BookModel[] }) => {

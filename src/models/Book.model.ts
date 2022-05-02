@@ -17,11 +17,6 @@ export interface BookStatCompose {
   progress: number;
 }
 
-export interface BookInfo extends jEpubInitProps {
-  href: string;
-  cover?: Blob;
-}
-
 const zeroStat: BookChaptersStat = {
   idle: 0,
   waiting: 0,
@@ -112,23 +107,19 @@ export class BookModel extends EventEmitter {
         description: `<br/>${info.description}`,
       });
 
-      await Promise.all(
-        this.chapters.map(async ({ props, content, images }) => {
-          Object.entries(images).forEach(([key, data]) =>
-            epub.image(data, key)
-          );
-          if (!content) {
-            content = `Not content!!! <br/><br/><pre>${JSON.stringify(
-              props,
-              undefined,
-              4
-            )}</pre>`;
-          } else {
-            content = content.replace(/\[img:(.+)\]/gi, "<%= image['$1']%>");
-          }
-          epub.add(props.title, content);
-        })
-      );
+      this.chapters.forEach(({ props, content, images }) => {
+        Object.entries(images).forEach(([key, data]) => epub.image(data, key));
+        if (!content) {
+          content = `Not content!!! <br/><br/><pre>${JSON.stringify(
+            props,
+            undefined,
+            4
+          )}</pre>`;
+        } else {
+          content = content.replace(/\[img:(.+)\]/gi, "<%= image['$1']%>");
+        }
+        epub.add(props.title, content);
+      });
 
       if (cover) epub.cover(cover);
       this.file = await epub.generate();

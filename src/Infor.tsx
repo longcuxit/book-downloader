@@ -14,7 +14,6 @@ import useTheme from "@mui/material/styles/useTheme";
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
 
 import { helper } from "./helper";
-import { BookInfo } from "./models/Book.model";
 
 export interface InfoProps {
   info: BookInfo;
