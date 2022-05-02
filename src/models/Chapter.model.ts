@@ -72,6 +72,7 @@ export class ChapterModel extends EventEmitter {
             img.replaceWith(`[img:${id}]`);
 
             const loader = async () => {
+              control.send({ action: "running" });
               const data = await helper.imageToBlob(src);
               if (data) {
                 this.emit("progress", this.progress++);
