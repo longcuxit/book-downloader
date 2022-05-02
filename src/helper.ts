@@ -1,5 +1,13 @@
 import EventEmitter from "events";
-import { useEffect, useState } from "react";
+import {
+  ComponentType,
+  createElement,
+  PureComponent,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 
 export const helper = {
   stringToDom(html: string, selector?: string) {
@@ -111,4 +119,19 @@ export const useEventEmitter = (emitter: EventEmitter, types: string) => {
     };
   }, [emitter, types]);
   return value;
+};
+
+export const withContainer = (
+  ...containers: ComponentType<{ children: ReactNode }>[]
+) => {
+  return function <C extends ComponentType<P>, P>(com: C) {
+    return ((props: P) => {
+      containers = [...containers];
+      let children: ReactElement = createElement(com, props);
+      while (containers.length) {
+        children = createElement(containers.pop()!, { children });
+      }
+      return children;
+    }) as C;
+  };
 };

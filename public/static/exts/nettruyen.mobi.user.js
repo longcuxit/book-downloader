@@ -31,6 +31,8 @@
   }
 */
 
+// var PUBLIC_URL = "http://localhost:3000";
+
 (async () => {
   "use strict";
   const container = document.querySelector("#init-links");
