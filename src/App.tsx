@@ -6,8 +6,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Link from "@mui/material/Link";
-import DialogContentText from "@mui/material/DialogContentText";
 
 import { ChapterModel } from "./models/Chapter.model";
 
@@ -22,32 +20,8 @@ type CacheItem = BookListProps | Promise<DownloadDataProps>;
 
 const cacheData: Record<string, CacheItem> = {};
 
-const confirmUnblock = {
-  title: "Access Control-Allow-Origin - Unblock",
-  content: (
-    <DialogContentText>
-      If you want download image for content, please install extension Access
-      Control-Allow-Origin - Unblock and active it.
-      <br />
-      <br />
-      <Link
-        href="https://chrome.google.com/webstore/detail/cors-unblock/lfhmikememgdcahcdlaciloancbhjino"
-        target="_blank"
-      >
-        CORS Unblock
-      </Link>{" "}
-      for Chrome
-      <br />
-      <Link
-        href="https://addons.mozilla.org/vi/firefox/addon/access-control-allow-origin/"
-        target="_blank"
-      >
-        Allow CORS
-      </Link>{" "}
-      for Firefox
-    </DialogContentText>
-  ),
-};
+console.log(chrome.extension.getBackgroundPage());
+
 const activeTab = () => {
   return new Promise<chrome.tabs.Tab>((next) => {
     chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) =>
@@ -77,6 +51,8 @@ function BookDownloader() {
   const confirmDialog = useConfirmDialog();
 
   useEffect(() => {
+    executeScript("/static/client.js");
+
     return control.effect("initialize", async ({ href }: { href: string }) => {
       let item = cacheData[href];
       window.focus();
@@ -90,19 +66,7 @@ function BookDownloader() {
         const { info, chapters, maxChunks = 5 } = data;
         let { image = "link" } = data;
         downloader.maxChunks = maxChunks;
-        let cover;
-        if (image === "download") {
-          do {
-            cover = (await helper.imageToBlob(info.cover)) ?? undefined;
-          } while (!cover && (await confirmDialog(confirmUnblock)));
-          if (!cover) {
-            cover = await helper.noCors(info.cover, helper.imageToBlob);
-            image = "embed";
-          }
-        } else {
-          cover = await helper.noCors(info.cover, helper.imageToBlob);
-        }
-
+        let cover = (await helper.imageToBlob(info.cover)) ?? undefined;
         info.description = helper.cleanHTML(info.description ?? "");
         item = cacheData[href] = {
           info: { ...info, cover, href: href },

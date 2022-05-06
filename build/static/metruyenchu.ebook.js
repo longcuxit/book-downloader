@@ -1,5 +1,6 @@
 (async () => {
   const isMobile = !!document.querySelector("#appMobile");
+
   const { ebook } = window;
 
   return ebook({
