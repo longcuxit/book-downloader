@@ -12,7 +12,6 @@ import PauseIcon from "@mui/icons-material/Pause";
 import ReplayIcon from "@mui/icons-material/Replay";
 
 import { BookModel } from "./models/Book.model";
-import { useEventEmitter } from "./helper";
 
 export interface BookProps {
   book: BookModel;
@@ -21,7 +20,7 @@ export interface BookProps {
 export const Book = ({ book }: BookProps) => {
   const { stat, composed, info } = book;
 
-  const { saving } = useEventEmitter(book, "stat,saving");
+  const saving = false;
 
   const actions = (
     <>
@@ -29,7 +28,7 @@ export const Book = ({ book }: BookProps) => {
         aria-label="Download"
         hidden={composed.progress === 100}
         disabled={!composed.available && !composed.running}
-        onClick={book.toggleDownload}
+        // onClick={book.toggleDownload}
       >
         <Box position="absolute" top={9} bottom={0} right="68%" fontSize={10}>
           {composed.running || composed.available}
@@ -63,9 +62,9 @@ export const Book = ({ book }: BookProps) => {
         disabled={saving}
         onClick={() => {
           if (composed.running) {
-            book.stopDownload();
+            // book.stopDownload();
           } else if (composed.available) {
-            book.startDownload();
+            // book.startDownload();
           } else {
             book.save();
           }

@@ -1,12 +1,4 @@
-import EventEmitter from "events";
-import {
-  ComponentType,
-  createElement,
-  ReactElement,
-  ReactNode,
-  useEffect,
-  useState,
-} from "react";
+import { ComponentType, createElement, ReactElement, ReactNode } from "react";
 
 export const helper = {
   stringToDom(html: string, selector?: string) {
@@ -95,31 +87,6 @@ export const helper = {
     html = html.replace(/(<br\/>)+$/gi, "");
     return html;
   },
-};
-
-export const useEventEmitter = (emitter: EventEmitter, types: string) => {
-  const [value, forceUpdate] = useState<Record<string, any>>({});
-
-  useEffect(() => {
-    const names = types.split(",");
-    const handles: Record<string, (v: any) => void> = {};
-    names.forEach((name) => {
-      handles[name] = helper.debounce((value: any) => {
-        forceUpdate((old) => {
-          return { ...old, [name]: value };
-        });
-      });
-
-      emitter.on(name, handles[name]);
-    });
-
-    return () => {
-      names.forEach((name) => {
-        emitter.off(name, handles[name]);
-      });
-    };
-  }, [emitter, types]);
-  return value;
 };
 
 export const withContainer = (

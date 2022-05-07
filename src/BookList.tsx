@@ -17,20 +17,19 @@ import { ChapterModel } from "./models/Chapter.model";
 
 import { Book } from "./Book";
 import { BookModel } from "./models/Book.model";
-import { useEventEmitter } from "./helper";
+import { NetNode } from "utils/NetStatus";
 
 const AllButtons = ({ books }: { books: BookModel[] }) => {
-  const allBooks = useMemo(() => {
-    const chapters = books.flatMap((book) => book.chapters);
-
-    return new BookModel({} as BookInfo, chapters);
+  const statusCompose = useMemo(() => {
+    // const chapters = books.flatMap((book) => book.chapters);
+    const statusCompose = new NetNode();
+    statusCompose.add(...books);
+    return statusCompose;
   }, [books]);
 
-  useEventEmitter(allBooks, "stat");
+  const { stat, composed } = statusCompose;
 
-  const { stat, composed } = allBooks;
-
-  useEffect(() => () => allBooks.destroy(), [allBooks]);
+  useEffect(() => () => statusCompose.dispose(), [statusCompose]);
 
   return (
     <>
@@ -39,7 +38,7 @@ const AllButtons = ({ books }: { books: BookModel[] }) => {
         disabled={
           composed.progress === 100 || (!!composed.running && !stat.waiting)
         }
-        onClick={allBooks.toggleDownload}
+        // onClick={statusCompose.toggleDownload}
         sx={{ minWidth: 44 }}
       >
         {composed.running ? (
@@ -105,7 +104,7 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
     });
   }, [image, info, books]);
 
-  useEffect(() => () => books.forEach((book) => book.destroy()), [books]);
+  useEffect(() => () => books.forEach((book) => book.dispose()), [books]);
 
   return (
     <section>
