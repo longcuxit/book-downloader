@@ -1,5 +1,5 @@
 import { Notifier } from "./Notifier";
-import "./Array.polyfill";
+import "./polyfill";
 
 export class TreeLeaf<P extends TreeNode = TreeNode> extends Notifier {
   private _parents: P[] = [];

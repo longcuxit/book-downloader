@@ -20,7 +20,7 @@ import { Info } from "./Infor";
 import { helper, withContainer } from "./helper";
 import { control } from "./controller";
 import { downloader } from "./Downloader";
-import { AsyncDialogContainer, useConfirmDialog } from "./AsyncDialog";
+import { AsyncDialogContainer, useConfirmDialog } from "widgets/AsyncDialog";
 
 type CacheItem = BookListProps | Promise<DownloadDataProps>;
 

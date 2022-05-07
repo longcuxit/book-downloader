@@ -12,6 +12,7 @@ export class BookModel extends ChapterListModel {
     super();
     this.add(...chapters);
   }
+
   // private onChapterProgress = () => {
   //   this.onChapterStatus({
   //     from: ChapterStatus.idle,

@@ -19,7 +19,7 @@ export interface BookProps {
 
 export const Book = ({ book }: BookProps) => {
   const { stat, composed, info } = book;
-
+  console.log(composed);
   const saving = false;
 
   const actions = (

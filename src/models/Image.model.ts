@@ -7,11 +7,13 @@ export class ImageModel extends NetNode<ChapterModel> {
   constructor(public data: ImageData) {
     super();
     if (data instanceof Blob) {
-      this.stat.success = 1;
+      this._stat.success = 1;
     } else if (data.startsWith("data:image/")) {
-      this.stat.success = 1;
+      this._stat.success = 1;
     } else {
-      this.stat.idle = 1;
+      this._stat.idle = 1;
     }
   }
+
+  async load() {}
 }

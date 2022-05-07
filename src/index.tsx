@@ -1,4 +1,5 @@
 import ReactDOM from "react-dom/client";
+import "utils/polyfill";
 import BookDownloader from "./App";
 
 const libs = [

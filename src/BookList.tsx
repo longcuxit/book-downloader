@@ -20,16 +20,15 @@ import { BookModel } from "./models/Book.model";
 import { NetNode } from "utils/NetStatus";
 
 const AllButtons = ({ books }: { books: BookModel[] }) => {
-  const statusCompose = useMemo(() => {
-    // const chapters = books.flatMap((book) => book.chapters);
-    const statusCompose = new NetNode();
-    statusCompose.add(...books);
-    return statusCompose;
+  const all = useMemo(() => {
+    const all = new NetNode();
+    all.add(...books);
+    return all;
   }, [books]);
 
-  const { stat, composed } = statusCompose;
+  const { stat, composed } = all;
 
-  useEffect(() => () => statusCompose.dispose(), [statusCompose]);
+  useEffect(() => () => all.dispose(), [all]);
 
   return (
     <>
@@ -38,7 +37,7 @@ const AllButtons = ({ books }: { books: BookModel[] }) => {
         disabled={
           composed.progress === 100 || (!!composed.running && !stat.waiting)
         }
-        // onClick={statusCompose.toggleDownload}
+        onClick={() => (composed.running ? all.unload() : all.load())}
         sx={{ minWidth: 44 }}
       >
         {composed.running ? (

@@ -1,4 +1,4 @@
-import { applyMixins } from "./mixin";
+import { applyMixins } from "utils/mixin";
 
 declare global {
   interface Array<T> {
