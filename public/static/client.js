@@ -24,25 +24,8 @@ window.BookDownloader = ((publicUrl) => {
     };
   })();
 
-  const delay = (() => {
-    let last = Date.now();
-    let delay = 0;
-    return () => {
-      const current = Date.now();
-      if (current - last > delay + 500) {
-        delay += 100;
-      } else {
-        delay -= 20;
-      }
-      delay = Math.max(delay, 0);
-      last = current;
-      return _.delay(delay);
-    };
-  })();
-
   const fetch = async (...args) => {
     wakeLock();
-    await delay();
     const rs = await window.fetch(...args);
     if (!rs.ok) throw rs;
     return rs;
