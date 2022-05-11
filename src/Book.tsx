@@ -12,15 +12,21 @@ import PauseIcon from "@mui/icons-material/Pause";
 import ReplayIcon from "@mui/icons-material/Replay";
 
 import { BookModel } from "./models/Book.model";
+import { useNotifier } from "utils/Notifier";
 
 export interface BookProps {
   book: BookModel;
 }
 
 export const Book = ({ book }: BookProps) => {
-  const { stat, composed, info } = book;
-  console.log(composed);
+  useNotifier(book);
+  const { stat, composed, info, children } = book;
   const saving = false;
+
+  const getChapterNum = (num: number) => {
+    num = (num / composed.total) * children.length;
+    return Math.round(num * 100) / 100;
+  };
 
   const actions = (
     <>
@@ -28,10 +34,10 @@ export const Book = ({ book }: BookProps) => {
         aria-label="Download"
         hidden={composed.progress === 100}
         disabled={!composed.available && !composed.running}
-        // onClick={book.toggleDownload}
+        onClick={() => (composed.available ? book.load() : book.unload())}
       >
         <Box position="absolute" top={9} bottom={0} right="68%" fontSize={10}>
-          {composed.running || composed.available}
+          {getChapterNum(composed.running || composed.available)}
         </Box>
         {composed.running ? (
           <PauseIcon color="error" />
@@ -48,7 +54,7 @@ export const Book = ({ book }: BookProps) => {
         onClick={() => book.save()}
       >
         <Box position="absolute" top={9} bottom={0} right="75%" fontSize={10}>
-          {stat.success}
+          {getChapterNum(stat.success)}
         </Box>
         {saving ? <CircularProgress size={20} /> : <SaveIcon />}
       </IconButton>

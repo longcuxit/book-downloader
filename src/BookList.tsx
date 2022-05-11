@@ -18,6 +18,7 @@ import { ChapterModel } from "./models/Chapter.model";
 import { Book } from "./Book";
 import { BookModel } from "./models/Book.model";
 import { NetNode } from "utils/NetStatus";
+import { useNotifier } from "utils/Notifier";
 
 const AllButtons = ({ books }: { books: BookModel[] }) => {
   const all = useMemo(() => {
@@ -25,7 +26,7 @@ const AllButtons = ({ books }: { books: BookModel[] }) => {
     all.add(...books);
     return all;
   }, [books]);
-
+  useNotifier(all);
   const { stat, composed } = all;
 
   useEffect(() => () => all.dispose(), [all]);

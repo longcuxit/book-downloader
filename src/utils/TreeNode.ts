@@ -48,4 +48,11 @@ export class TreeNode<
     this.remove(...this._children);
     super.dispose();
   }
+
+  recursiveParents(call: (parent: P) => void | boolean) {
+    this.parents.forEach((parent) => {
+      call(parent);
+      parent.recursiveParents(call);
+    });
+  }
 }

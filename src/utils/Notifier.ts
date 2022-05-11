@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export type Listener = () => void;
 
@@ -31,5 +31,6 @@ export class Notifier {
 }
 
 export const useNotifier = (notifier: Notifier) => {
-  useEffect(() => notifier.listen(() => {}), [notifier]);
+  const [, setState] = useState({});
+  useEffect(() => notifier.listen(() => setState({})), [notifier]);
 };

@@ -15,6 +15,7 @@ export interface NetComposed {
   running: number;
   buffer: number;
   progress: number;
+  total: number;
 }
 
 const zeroStat: NetStat = {
@@ -24,6 +25,8 @@ const zeroStat: NetStat = {
   success: 0,
   error: 0,
 };
+
+const statKeys = Object.keys(zeroStat);
 
 export class NetNode<
   C extends NetNode = any,
@@ -46,54 +49,65 @@ export class NetNode<
     );
   }
 
-  private _composed: NetComposed = {
+  protected _composed: NetComposed = {
     available: 0,
     running: 0,
     buffer: 0,
     progress: 0,
+    total: 0,
   };
 
   get composed(): Readonly<NetComposed> {
     return this._composed;
   }
 
-  private compose() {
-    const { _stat, _composed, children } = this;
-    Object.assign(_composed, {
-      available: _stat.idle + _stat.error,
-      running: _stat.waiting + _stat.loading,
-      buffer: ((_stat.success + _stat.loading) / children.length) * 100,
-      progress: (_stat.success / children.length) * 100,
-    });
+  protected compose() {
+    const { _stat, _composed } = this;
+    const total = statKeys.reduce((total, key) => total + _stat[key], 0);
+
+    const available = _stat.idle + _stat.error;
+    const running = _stat.waiting + _stat.loading;
+
+    const buffer = ((_stat.success + _stat.loading) / total) * 100;
+    const progress = (_stat.success / total) * 100;
+
+    Object.assign(_composed, { available, running, buffer, progress, total });
   }
 
   statChange(to: NetStatus, from: NetStatus = this.status) {
-    const { _stat, status, parents } = this;
+    const { _stat, parents } = this;
     _stat[from]--;
     _stat[to]++;
     this.compose();
-    const nextStatus = this.status;
-    if (status !== nextStatus) {
-      parents.forEach((parent) => {
-        parent.statChange(status, nextStatus);
-      });
-    }
+    parents.forEach((parent) => {
+      parent.statChange(to, from);
+    });
     this.notify();
   }
 
   add(...children: C[]): () => void {
-    const { _stat } = this;
-    children.forEach((child) => {
-      _stat[child.status] += 1;
-    });
+    const addStat = (parent: NetNode) => {
+      children.forEach((child) => {
+        statKeys.forEach((key) => {
+          parent._stat[key] += child.stat[key];
+        });
+      });
+    };
+    addStat(this);
+    this.recursiveParents(addStat);
     return final(super.add(...children), this.compose());
   }
 
   remove(...children: C[]): void {
-    const { _stat } = this;
-    children.forEach((child) => {
-      _stat[child.status] -= 1;
-    });
+    const subStat = (parent: NetNode) => {
+      children.forEach((child) => {
+        statKeys.forEach((key) => {
+          parent._stat[key] -= child.stat[key];
+        });
+      });
+    };
+    subStat(this);
+    this.recursiveParents(subStat);
     return final(super.remove(...children), this.compose());
   }
 
