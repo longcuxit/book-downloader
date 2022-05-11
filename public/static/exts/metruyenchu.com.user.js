@@ -102,7 +102,7 @@
         _.query("#nav-tab-chap").click();
       }
 
-      return { info: info, chapters: await getChapters() };
+      return { info: info, chapters: await getChapters(), maxChunks: 20 };
     },
     async getChapter({ url }) {
       const content = await _.fetch(url).then((rs) => rs.text());

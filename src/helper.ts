@@ -83,8 +83,9 @@ export const helper = {
     });
     html = html.replace(/>( |\n|\t)+</gi, "><");
     html = html.replace(/(<br\/>)+/gi, "<br/><br/>");
-    html = html.replace(/^(<br\/>)+/gi, "");
-    html = html.replace(/(<br\/>)+$/gi, "");
+    html = html.replace(/^(<br\/>)+/gi, "<p>");
+    html = html.replace(/(<br\/>)+$/gi, "</p>");
+    html = html.replaceAll("<br/><br/>", "</p><p>");
     return html;
   },
 };
