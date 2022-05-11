@@ -64,7 +64,12 @@
         url: aTag.href,
       }));
 
-      return { info, chapters: chapters.reverse(), image: "download" };
+      return {
+        info,
+        chapters: chapters.reverse(),
+        image: "download",
+        maxChunks: 30,
+      };
     },
     async getChapter({ url }) {
       const content = await _.fetch(url).then((rs) => rs.text());
