@@ -19,9 +19,7 @@ export interface BookProps {
 }
 
 export const Book = ({ book }: BookProps) => {
-  useNotifier(book);
-  const { stat, composed, info, children } = book;
-  const saving = false;
+  const { stat, composed, info, children, saving } = useNotifier(book);
 
   const getChapterNum = (num: number) => {
     num = (num / composed.total) * children.length;
@@ -34,7 +32,7 @@ export const Book = ({ book }: BookProps) => {
         aria-label="Download"
         hidden={composed.progress === 100}
         disabled={!composed.available && !composed.running}
-        onClick={() => (composed.available ? book.load() : book.unload())}
+        onClick={() => (composed.running ? book.unload() : book.load())}
       >
         <Box position="absolute" top={9} bottom={0} right="68%" fontSize={10}>
           {getChapterNum(composed.running || composed.available)}
@@ -68,9 +66,9 @@ export const Book = ({ book }: BookProps) => {
         disabled={saving}
         onClick={() => {
           if (composed.running) {
-            // book.stopDownload();
+            book.unload();
           } else if (composed.available) {
-            // book.startDownload();
+            book.load();
           } else {
             book.save();
           }

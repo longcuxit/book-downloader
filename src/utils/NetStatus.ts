@@ -1,3 +1,5 @@
+import { control } from "controller";
+import { downloader, DownloadStep } from "Downloader";
 import { TreeNode } from "./TreeNode";
 
 export enum NetStatus {
@@ -32,24 +34,14 @@ export class NetNode<
   C extends NetNode = any,
   P extends NetNode = any
 > extends TreeNode<C, P> {
+  private _queries: DownloadStep[] = [];
+
   protected _stat = { ...zeroStat };
   get stat(): Readonly<NetStat> {
     return this._stat;
   }
 
-  get status() {
-    const { _stat } = this;
-    return (
-      [
-        NetStatus.loading,
-        NetStatus.waiting,
-        NetStatus.error,
-        NetStatus.success,
-      ].find((status) => _stat[status]) ?? NetStatus.idle
-    );
-  }
-
-  protected _composed: NetComposed = {
+  private _composed: NetComposed = {
     available: 0,
     running: 0,
     buffer: 0,
@@ -61,7 +53,7 @@ export class NetNode<
     return this._composed;
   }
 
-  protected compose() {
+  private compose() {
     const { _stat, _composed } = this;
     const total = statKeys.reduce((total, key) => total + _stat[key], 0);
 
@@ -74,14 +66,12 @@ export class NetNode<
     Object.assign(_composed, { available, running, buffer, progress, total });
   }
 
-  statChange(to: NetStatus, from: NetStatus = this.status) {
+  private statChange(from: NetStatus, to: NetStatus) {
     const { _stat, parents } = this;
     _stat[from]--;
     _stat[to]++;
     this.compose();
-    parents.forEach((parent) => {
-      parent.statChange(to, from);
-    });
+    parents.forEach((parent) => parent.statChange(from, to));
     this.notify();
   }
 
@@ -112,10 +102,39 @@ export class NetNode<
   }
 
   async load() {
+    const { _stat } = this;
+    const queries = this._queries.map(async (query) => {
+      try {
+        this.statChange(
+          _stat.idle ? NetStatus.idle : NetStatus.error,
+          NetStatus.waiting
+        );
+        await downloader.add(query);
+      } catch (error: any) {
+        this.statChange(NetStatus.loading, NetStatus.error);
+      }
+    });
+
+    await Promise.all(queries);
     await Promise.all(this.children.map((child) => child.load()));
   }
 
-  async unload() {
-    await Promise.all(this.children.map((child) => child.unload()));
+  unload() {
+    this._queries.forEach((query) => downloader.remove(query));
+    this.children.map((child) => child.unload());
+  }
+
+  protected pushQuery(query: DownloadStep) {
+    this._stat.idle++;
+    const { _queries } = this;
+    const step = async () => {
+      this.statChange(NetStatus.waiting, NetStatus.loading);
+      control.send({ action: "running" });
+      await query();
+      _queries.splice(_queries.indexOf(step));
+      this.statChange(NetStatus.loading, NetStatus.success);
+    };
+    _queries.push(step);
+    this.compose();
   }
 }

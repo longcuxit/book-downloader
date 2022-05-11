@@ -30,7 +30,8 @@ export class Notifier {
   }
 }
 
-export const useNotifier = (notifier: Notifier) => {
+export function useNotifier<N extends Notifier>(notifier: N) {
   const [, setState] = useState({});
   useEffect(() => notifier.listen(() => setState({})), [notifier]);
-};
+  return notifier;
+}

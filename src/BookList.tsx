@@ -26,8 +26,8 @@ const AllButtons = ({ books }: { books: BookModel[] }) => {
     all.add(...books);
     return all;
   }, [books]);
-  useNotifier(all);
-  const { stat, composed } = all;
+
+  const { stat, composed } = useNotifier(all);
 
   useEffect(() => () => all.dispose(), [all]);
 

@@ -1,4 +1,4 @@
-export type DownloadStep = () => any;
+export type DownloadStep = () => Promise<any>;
 class Downloader {
   schedules: [DownloadStep, () => void, (error: any) => void][] = [];
   loading = 0;
@@ -11,12 +11,12 @@ class Downloader {
     this.loading++;
     const [step, next, error] = this.schedules.shift()!;
     step()
-      .then(() => {
+      .then(next)
+      .catch(error)
+      .finally(() => {
         this.loading--;
         this.progress();
-        next();
-      })
-      .catch(error);
+      });
     this.progress();
   }
 

@@ -11,9 +11,13 @@ export class BookModel extends ChapterListModel {
     this.add(...chapters);
   }
 
+  saving = false;
+
   async save() {
     if (!this.stat.success) return;
     const { cover, href, ...info } = this.info;
+    this.saving = true;
+    this.notify();
     if (!this.file) {
       await helper.delay(100);
       const tags = [`<a href="${href}">${href}</a>`, ...(info.tags ?? [])];
@@ -42,5 +46,7 @@ export class BookModel extends ChapterListModel {
     }
     saveAs(this.file, `${info.title}.epub`);
     await helper.delay(500);
+    this.saving = false;
+    this.notify();
   }
 }
