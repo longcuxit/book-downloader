@@ -68,7 +68,7 @@
         info,
         chapters: chapters.reverse(),
         image: "download",
-        maxChunks: 30,
+        maxChunks: 10,
       };
     },
     async getChapter({ url }) {
