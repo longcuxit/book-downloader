@@ -31,7 +31,7 @@
   }
 */
 
-// var PUBLIC_URL = "http://localhost:3000";
+var PUBLIC_URL = "http://localhost:3000";
 
 (async () => {
   "use strict";
