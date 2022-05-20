@@ -39,7 +39,7 @@ export const helper = {
     return hash.toString(16);
   },
 
-  imageToBlob(src: string, type: string = "image/webp") {
+  imageToBlob(src: string, type: string = "image/jpeg") {
     return new Promise<Blob | undefined>((next) => {
       var img = new Image();
       img.crossOrigin = "Anonymous";
