@@ -92,7 +92,9 @@ function BookDownloader() {
             image = "embed";
           }
         } else {
-          cover = await helper.noCors(info.cover, helper.imageToBlob);
+          cover = await helper.noCors(info.cover, (img) =>
+            helper.imageToBlob(img, "image/jpeg")
+          );
         }
 
         info.description = helper.cleanHTML(info.description ?? "");
