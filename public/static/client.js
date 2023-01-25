@@ -37,7 +37,7 @@ window.BookDownloader = ((publicUrl) => {
     fetch: (data) => fetch(data).then((rs) => rs.blob()),
     fetchChapter: async (request, retry = 2) => {
       try {
-        return fetchChapter(request);
+        return await fetchChapter(request);
       } catch (error) {
         if (retry && error.status >= 500) {
           return _.delay(1000).then(() =>
@@ -99,6 +99,8 @@ window.BookDownloader = ((publicUrl) => {
     return { show, hide };
   })();
 
+  var ownerDocument = document.implementation.createHTMLDocument("virtual");
+
   const _ = {
     fetch,
     query(selector, from = document) {
@@ -116,7 +118,7 @@ window.BookDownloader = ((publicUrl) => {
 
     stringToDom(html, selector) {
       html = html.replace(/ src=/gi, " data-src=");
-      const div = document.createElement("div");
+      const div = ownerDocument.createElement("div");
       div.innerHTML = html;
       return selector ? _.query(selector, div) : div;
     },
