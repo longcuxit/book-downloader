@@ -52,13 +52,12 @@ window.BookDownloader = ((publicUrl) => {
 
   window.addEventListener("message", async ({ data, source }) => {
     if (data.action) {
-      let response;
       try {
-        response = await Promise.resolve(actions[data.action](data.args));
+        const response = await Promise.resolve(actions[data.action](data.args));
+        source.postMessage({ id: data.id, response }, "*");
       } catch (error) {
-        response = error;
+        source.postMessage({ id: data.id, error: error.message }, "*");
       }
-      source.postMessage({ id: data.id, response }, "*");
     }
   });
 

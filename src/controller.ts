@@ -32,9 +32,9 @@ class Controller extends EventEmitter {
   request<T>(action: string, request?: any) {
     const id = uid();
 
-    return new Promise<T>((next, error) => {
-      this.once(id, ({ response }) => {
-        if (response instanceof Error) error(response);
+    return new Promise<T>((next, reject) => {
+      this.once(id, ({ response, error }) => {
+        if (error) reject(error);
         else next(response);
       });
       this.send({ action, id, args: request });

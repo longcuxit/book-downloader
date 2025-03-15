@@ -38,7 +38,9 @@
   "use strict";
   var container = document.querySelector("#suggest-book")?.parentElement;
   if (!container) return;
-  await import("https://longcuxit.github.io/book-downloader/build" + "/static/client.js");
+  await import(
+    "https://longcuxit.github.io/book-downloader/build" + "/static/client.js"
+  );
 
   const isMobile = document.querySelector("#appMobile");
 
