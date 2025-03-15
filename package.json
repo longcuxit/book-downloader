@@ -17,6 +17,7 @@
     "@types/react-dom": "^18.0.0",
     "epub-gen": "^0.1.0",
     "epub-gen-memory": "^1.0.9",
+    "epubjs": "^0.3.93",
     "file-saver": "^2.0.5",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
