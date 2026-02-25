@@ -1,5 +1,5 @@
 import { Notifier } from "./Notifier";
-import "./polyfill";
+import { remove } from "./helpers";
 
 export class TreeLeaf<P extends TreeNode = TreeNode> extends Notifier {
   private _parents: P[] = [];
@@ -13,7 +13,7 @@ export class TreeLeaf<P extends TreeNode = TreeNode> extends Notifier {
   }
 
   leave(parent: P) {
-    this._parents.remove(parent);
+    remove(this._parents, parent);
   }
 
   dispose() {
@@ -41,7 +41,7 @@ export class TreeNode<
   }
 
   remove(...children: C[]) {
-    this._children.remove(...children).forEach((child) => child.leave(this));
+    remove(this._children, ...children).forEach((child) => child.leave(this));
   }
 
   dispose(): void {

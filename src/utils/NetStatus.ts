@@ -1,7 +1,7 @@
 import { control } from "controller";
 import { downloader, DownloadStep } from "Downloader";
 import { TreeNode } from "./TreeNode";
-
+import { final, getKeys } from "./helpers";
 export enum NetStatus {
   idle = "idle",
   waiting = "waiting",
@@ -28,7 +28,7 @@ const zeroStat: NetStat = {
   error: 0,
 };
 
-const statKeys = Object.keys(zeroStat);
+const statKeys = getKeys(zeroStat);
 
 export class NetNode<
   C extends NetNode = any,

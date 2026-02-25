@@ -1,5 +1,35 @@
-import { EventEmitter } from "events";
 import { ChapterProps } from "./models/Chapter.model";
+
+class EventEmitter {
+  private _listeners: Record<string, ((...args: any[]) => void)[]> = {};
+
+  on(event: string | symbol, listener: (...args: any[]) => void) {
+    const key = String(event);
+    (this._listeners[key] ??= []).push(listener);
+    return this;
+  }
+
+  off(event: string | symbol, listener: (...args: any[]) => void) {
+    const key = String(event);
+    const arr = this._listeners[key];
+    if (arr) this._listeners[key] = arr.filter((l) => l !== listener);
+    return this;
+  }
+
+  once(event: string | symbol, listener: (...args: any[]) => void) {
+    const wrapper = (...args: any[]) => {
+      this.off(event, wrapper);
+      listener(...args);
+    };
+    return this.on(event, wrapper);
+  }
+
+  emit(event: string | symbol, ...args: any[]) {
+    const key = String(event);
+    this._listeners[key]?.forEach((l) => l(...args));
+    return this;
+  }
+}
 
 type MessageResponse<T = any> = MessageEvent<{
   id: string;

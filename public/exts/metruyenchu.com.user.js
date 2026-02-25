@@ -1,14 +1,14 @@
 /* eslint-disable no-undef */
 // ==UserScript==
-// @name         metruyencv.com downloader
+// @name         MeTruyenChu.com downloader
 // @namespace    longcuxit
-// @description  Tải truyện từ metruyencv.com định dạng epub.
+// @description  Tải truyện từ metruyenchu.com định dạng epub.
 // @version      1.0
-// @icon         https://metruyencv.com/assets/images/logo.png?260324
+// @icon         https://metruyenchu.com/assets/images/logo.png?260324
 // @author       HoangLong
 // @oujs:author  longcuxit
-// @match        http://metruyencv.com/truyen/*
-// @match        https://metruyencv.com/truyen/*
+// @match        http://metruyenchu.com/truyen/*
+// @match        https://metruyenchu.com/truyen/*
 // @connect      self
 // @run-at       document-idle
 // @noframes
@@ -32,15 +32,13 @@
   }
 */
 
-// "https://longcuxit.github.io/book-downloader/build" = "http://localhost:3000";
+// PUBLIC_URL = "http://localhost:3000";
 
 (async () => {
   "use strict";
   var container = document.querySelector("#suggest-book")?.parentElement;
   if (!container) return;
-  await import(
-    "https://longcuxit.github.io/book-downloader/build" + "/static/client.js"
-  );
+  await import(PUBLIC_URL + "/static/client.js");
 
   const isMobile = document.querySelector("#appMobile");
 
@@ -104,7 +102,7 @@
         _.query("#nav-tab-chap").click();
       }
 
-      return { info: info, chapters: await getChapters(), maxChunks: 20 };
+      return { info: info, chapters: await getChapters() };
     },
     async getChapter({ url }) {
       const content = await _.fetch(url).then((rs) => rs.text());

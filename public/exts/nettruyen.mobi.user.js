@@ -31,7 +31,7 @@
   }
 */
 
-var PUBLIC_URL = "http://localhost:3000";
+// var PUBLIC_URL = "http://localhost:3000";
 
 (async () => {
   "use strict";
@@ -64,12 +64,7 @@ var PUBLIC_URL = "http://localhost:3000";
         url: aTag.href,
       }));
 
-      return {
-        info,
-        chapters: chapters.reverse(),
-        image: "download",
-        maxChunks: 10,
-      };
+      return { info, chapters: chapters.reverse(), image: "download" };
     },
     async getChapter({ url }) {
       const content = await _.fetch(url).then((rs) => rs.text());

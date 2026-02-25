@@ -13,7 +13,6 @@ export const helper = {
     transfer: (url: string) => Promise<Blob | undefined>
   ) {
     const urls: string[] = [
-      `https://api.allorigins.win/raw?url=${encodeURI(src)}`,
       `https://api.codetabs.com/v1/proxy/?quest=${encodeURI(src)}`,
       `https://cors-anywhere.herokuapp.com/${src}`,
     ];
@@ -93,10 +92,10 @@ export const helper = {
 export const withContainer = (
   ...containers: ComponentType<{ children: ReactNode }>[]
 ) => {
-  return function <C extends ComponentType<P>, P>(com: C) {
+  return function <C extends ComponentType<P>, P>(Com: C) {
     return ((props: P) => {
       containers = [...containers];
-      let children: ReactElement = createElement(com, props);
+      let children: ReactElement = createElement(Com as any, props as any);
       while (containers.length) {
         children = createElement(containers.pop()!, { children });
       }
