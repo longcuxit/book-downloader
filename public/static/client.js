@@ -215,7 +215,7 @@ window.BookDownloader = ((publicUrl) => {
     render(container, { props = {}, href }) {
       href = href || window.location.href;
       const btn = document.createElement("button");
-      btn.innerHTML = `<svg focusable="false" width="1.4rem" height="1.4rem" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z" /></svg>`;
+      btn.innerHTML = `<svg focusable="false" width="1.4rem" height="1.4rem" viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z" /></svg>`;
       Object.assign(btn, { type: "button" }, props);
       container.appendChild(btn);
 

@@ -53,37 +53,34 @@ export const defaultConfig: ConfigMap = {
       },
       chapterList: ".clearfix a",
       chapterListScript: `
-    const baseUrl = window.location.origin;
-    const bookId = rid
-    const lastPagingLink = document.querySelector('.paging a:last-child');
-    const onclickAttr = lastPagingLink ? lastPagingLink.getAttribute('onclick') : null;
-    const maxPageMatch = onclickAttr ? onclickAttr.match(/page\(\d+,(\d+)\)/) : null;
-    const maxPage = maxPageMatch ? parseInt(maxPageMatch[1], 10) : 1;
+const baseUrl = window.location.origin;
+const bookId = rid
+const numChapters = +_.query('.book-info-text li:nth-child(3)').childNodes[1].textContent
+const maxPage = Math.ceil(numChapters / 100)
+const chapters = [];
+let page = 1;
+while (page <= maxPage) {
+  const url = \`\${baseUrl}/get/listchap/\${bookId}?page=\${page}\`;
+  const response = await fetch(url);
+  if (!response.ok) break;
 
-    const chapters = [];
-    let page = 1;
-    while (page <= maxPage) {
-      const url = \`\${baseUrl}/get/listchap/\${bookId}?page=\${page}\`;
-      const response = await fetch(url);
-      if (!response.ok) break;
+  const json = await response.json();
+  if (!json.data || json.data.trim() === "" || !json.data.includes('<li')) break;
 
-      const json = await response.json();
-      if (!json.data || json.data.trim() === "" || !json.data.includes('<li')) break;
-
-      const div = _.stringToDom(json.data);
-      Array.from(div.querySelectorAll("li a")).forEach((aTag) => {
-        const href = aTag.getAttribute("href");
-        if (href && !href.includes("javascript")) {
-          chapters.push({
-            title: aTag.innerText.trim(),
-            url: href.startsWith("http") ? href : baseUrl + href,
-          });
-        }
+  const div = _.stringToDom(json.data);
+  Array.from(div.querySelectorAll("li a")).forEach((aTag) => {
+    const href = aTag.getAttribute("href");
+    if (href && !href.includes("javascript")) {
+      chapters.push({
+        title: aTag.innerText.trim(),
+        url: href.startsWith("http") ? href : baseUrl + href,
       });
-
-      page++;
     }
-    return chapters;
+  });
+
+  page++;
+}
+return chapters;
       `,
       chapterDetail: ".truyen",
     },

@@ -19,7 +19,7 @@ import { ChapterModel } from "./models/Chapter.model";
 import { BookList, BookListProps } from "./widgets/BookList";
 import { Info } from "./widgets/Infor";
 import { ConfigForm } from "./widgets/ConfigForm";
-import { defaultConfig, getActiveConfig } from "./config";
+import { getActiveConfig } from "./config";
 import { helper, withContainer } from "./utils/helpers";
 import { control } from "./utils/controller";
 import { downloader } from "./utils/Downloader";
@@ -185,14 +185,14 @@ function BookDownloader() {
           </AppBar>
 
           <Box flex={1}>
-            <Grid container spacing={0} height="100%">
+            <Grid container spacing={0} sx={{ height: "100%" }}>
               {/* Cột trái: Config Form */}
               <Grid
-                item
-                xs={12}
-                md={4}
-                height={{ xs: "auto", md: "100%" }}
-                borderRight={{ xs: "none", md: "1px solid rgba(0,0,0,0.1)" }}
+                size={{ xs: 12, md: 4 }}
+                sx={{
+                  height: { xs: "auto", md: "100%" },
+                  borderRight: { xs: "none", md: "1px solid rgba(0,0,0,0.1)" },
+                }}
               >
                 <ConfigForm
                   onSave={() => {
@@ -209,11 +209,13 @@ function BookDownloader() {
 
               {/* Cột phải: Info & Chapter List */}
               <Grid
-                item
-                xs={12}
-                md={8}
-                height={{ xs: "auto", md: "100%" }}
-                sx={{ overflowY: "auto", position: "relative", minHeight: 300 }}
+                size={{ xs: 12, md: 8 }}
+                sx={{
+                  height: { xs: "auto", md: "100%" },
+                  overflowY: "auto",
+                  position: "relative",
+                  minHeight: 300,
+                }}
               >
                 {props ? (
                   <>

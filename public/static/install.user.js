@@ -26,6 +26,11 @@
   await import("{VITE_APP_URL}/static/client.js");
 
   const { render, _ } = BookDownloader;
-  const button = render(container, {});
-  button.className = "btn btn-danger btn-block btn-style-1 btn-border";
+  const button = render(document.body, {});
+  button.style = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99999999;
+  `;
 })();

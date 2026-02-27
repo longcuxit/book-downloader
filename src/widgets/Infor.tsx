@@ -9,7 +9,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Divider from "@mui/material/Divider";
 import Container from "@mui/material/Container";
 
-import useTheme from "@mui/material/styles/useTheme";
+import { useTheme } from "@mui/material/styles";
 
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
 import { helper } from "../utils/helpers";
@@ -56,7 +56,7 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: false,
-    accept: "image/*",
+    accept: { "image/*": [] },
   });
 
   const cover = image ?? info.cover;
@@ -66,7 +66,7 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
   return (
     <Container sx={{ paddingY: 2 }}>
       <Grid container spacing={1}>
-        <Grid item>
+        <Grid>
           <Box
             width={120}
             height={160}
@@ -142,7 +142,7 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
             />
           </Box>
         </Grid>
-        <Grid item flex={1}>
+        <Grid sx={{ flex: 1 }}>
           <Box position="relative" height="100%">
             <Box position="absolute" style={{ inset: 0 }} overflow="auto">
               {info.tags?.map((tag, i) => (
@@ -168,7 +168,7 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
           </Box>
         </Grid>
         {!upSM && (
-          <Grid item xs={12} textAlign="justify">
+          <Grid size={{ xs: 12 }} sx={{ textAlign: "justify" }}>
             <Divider sx={{ marginY: 1 }} />
             <Typography
               variant="caption"
