@@ -3,38 +3,16 @@ class Downloader {
   schedules: [DownloadStep, () => void, (error: any) => void][] = [];
   loading = 0;
   maxChunks = 3;
-  failCount = 0;
-  paused = false;
-
-  pause() {
-    this.paused = true;
-  }
-
-  resume() {
-    this.paused = false;
-    this.failCount = 0;
-    this.progress();
-  }
 
   private progress() {
-    if (this.paused) return;
     if (!this.schedules.length) return;
     if (this.loading >= this.maxChunks) return;
 
     this.loading++;
     const [step, next, error] = this.schedules.shift()!;
     step()
-      .then(() => {
-        this.failCount = 0;
-        next();
-      })
-      .catch((err) => {
-        this.failCount++;
-        if (this.failCount >= 5) {
-          this.pause();
-        }
-        error(err);
-      })
+      .then(next)
+      .catch(error)
       .finally(() => {
         this.loading--;
         this.progress();

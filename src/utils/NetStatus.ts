@@ -102,8 +102,8 @@ export class NetNode<
   }
 
   async load() {
-    downloader.resume();
     const { _stat } = this;
+    let countError = 0;
     const queries = this._queries.map(async (query) => {
       try {
         this.statChange(
@@ -113,6 +113,8 @@ export class NetNode<
         await downloader.add(query);
       } catch (error: any) {
         this.statChange(NetStatus.loading, NetStatus.error);
+        countError++;
+        if (countError >= 5) this.unload();
       }
     });
 

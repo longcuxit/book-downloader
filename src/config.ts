@@ -182,6 +182,5 @@ export const getActiveConfig = (domain: string): SelectorConfig => {
     defaultConfig.hosts[domain] ||
     defaultConfig.hosts["default"] ||
     emptyConfig;
-  console.log("getActiveConfig", domain, config);
   return config;
 };
