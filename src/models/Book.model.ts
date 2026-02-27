@@ -1,12 +1,15 @@
 import { saveAs } from "file-saver";
-import { helper } from "../helper";
+import { helper } from "../utils/helpers";
 
 import { ChapterModel } from "./Chapter.model";
 import { ChapterListModel } from "./ChapterList.model";
 
 export class BookModel extends ChapterListModel {
   private file: any;
-  constructor(public info: BookInfo, chapters: ChapterModel[]) {
+  constructor(
+    public info: BookInfo,
+    chapters: ChapterModel[],
+  ) {
     super();
     this.add(...chapters);
   }
@@ -34,7 +37,7 @@ export class BookModel extends ChapterListModel {
           content = `Not content!!! <br/><br/><pre>${JSON.stringify(
             props,
             undefined,
-            4
+            4,
           )}</pre>`;
         } else {
           content = content.replace(/\[img:(.+)\]/gi, "<%= image['$1']%>");

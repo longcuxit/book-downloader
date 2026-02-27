@@ -12,8 +12,7 @@ import Container from "@mui/material/Container";
 import useTheme from "@mui/material/styles/useTheme";
 
 import DeleteIcon from "@mui/icons-material/DeleteOutline";
-
-import { helper } from "./helper";
+import { helper } from "../utils/helpers";
 
 export interface InfoProps {
   info: BookInfo;
@@ -35,7 +34,7 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
           .imageToBlob(reader.result as string)
           .then((img) => onImage(img || undefined));
     },
-    [onImage]
+    [onImage],
   );
 
   const onPaste = useCallback(
@@ -45,7 +44,7 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
       files.filter(({ type }) => type.startsWith("image/"));
       if (files.length) onDrop(files);
     },
-    [onDrop]
+    [onDrop],
   );
 
   useEffect(() => {
@@ -147,10 +146,9 @@ export const Info = ({ info, image, onImage }: InfoProps) => {
           <Box position="relative" height="100%">
             <Box position="absolute" style={{ inset: 0 }} overflow="auto">
               {info.tags?.map((tag, i) => (
-                <Typography
+                <div
                   key={i}
-                  variant="caption"
-                  component="div"
+                  style={{ display: "inline-block", marginRight: 4 }}
                   dangerouslySetInnerHTML={{ __html: tag }}
                 />
               ))}

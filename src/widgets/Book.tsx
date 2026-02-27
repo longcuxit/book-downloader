@@ -11,7 +11,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import PauseIcon from "@mui/icons-material/Pause";
 import ReplayIcon from "@mui/icons-material/Replay";
 
-import { BookModel } from "./models/Book.model";
+import { BookModel } from "models/Book.model";
 import { useNotifier } from "utils/Notifier";
 
 export interface BookProps {

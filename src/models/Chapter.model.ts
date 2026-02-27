@@ -1,5 +1,5 @@
-import { control } from "../controller";
-import { helper } from "../helper";
+import { control } from "../utils/controller";
+import { helper } from "../utils/helpers";
 import { NetNode } from "../utils/NetStatus";
 import { ChapterListModel } from "./ChapterList.model";
 import { ImageModel } from "./Image.model";
@@ -9,7 +9,10 @@ export interface ChapterProps extends Record<string, any> {
 }
 
 export class ChapterModel extends NetNode<ImageModel, ChapterListModel> {
-  constructor(public props: ChapterProps, public image: ImageFormat) {
+  constructor(
+    public props: ChapterProps,
+    public image: ImageFormat,
+  ) {
     super();
 
     this.pushQuery(async () => {
@@ -19,17 +22,19 @@ export class ChapterModel extends NetNode<ImageModel, ChapterListModel> {
       const dom = helper.stringToDom(this.content)!;
 
       if (this.image === "download") {
-        const images = Array.from(dom.querySelectorAll("img")).map((img) => {
-          const src = img.getAttribute("data-src")!;
-          const id = "_" + helper.hashString(src);
-          img.replaceWith(`[img:${id}]`);
+        const images = Array.from(dom.querySelectorAll("img")).map(
+          (img: any) => {
+            const src = img.getAttribute("data-src")!;
+            const id = "_" + helper.hashString(src);
+            img.replaceWith(`[img:${id}]`);
 
-          return new ImageModel(id, src);
-        });
+            return new ImageModel(id, src);
+          },
+        );
         this.add(...images);
         this.content = helper.cleanHTML(dom.outerHTML, ["a", "hr"]);
       } else if (this.image === "link") {
-        Array.from(dom.querySelectorAll("img")).forEach((img) => {
+        Array.from(dom.querySelectorAll("img")).forEach((img: any) => {
           const src = img.getAttribute("data-src")!;
           const a = document.createElement("a");
           a.href = src;
@@ -42,7 +47,7 @@ export class ChapterModel extends NetNode<ImageModel, ChapterListModel> {
       } else if (this.image === "embed") {
         this.content = helper.cleanHTML(
           dom.outerHTML.replace(/ data-src=/gi, " src="),
-          ["a", "hr", "img"]
+          ["a", "hr", "img"],
         );
       } else {
         this.content = helper.cleanHTML(dom.outerHTML, ["a", "hr"]);

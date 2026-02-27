@@ -13,10 +13,10 @@ import PauseIcon from "@mui/icons-material/Pause";
 import ReplayIcon from "@mui/icons-material/Replay";
 import SaveIcon from "@mui/icons-material/Save";
 
-import { ChapterModel } from "./models/Chapter.model";
+import { ChapterModel } from "../models/Chapter.model";
 
 import { Book } from "./Book";
-import { BookModel } from "./models/Book.model";
+import { BookModel } from "../models/Book.model";
 import { NetNode } from "utils/NetStatus";
 import { useNotifier } from "utils/Notifier";
 
@@ -72,7 +72,7 @@ export interface BookListProps {
 }
 
 export const BookList = ({ chapters, info, image }: BookListProps) => {
-  const [config, setConfig] = useState({ skip: 0, split: 1000 });
+  const [config, setConfig] = useState({ skip: 0, split: 10000 });
 
   const [books, setBooks] = useState<BookModel[]>([]);
 

@@ -9,17 +9,20 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import DialogContentText from "@mui/material/DialogContentText";
+import Grid from "@mui/material/Grid";
 
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 
 import { ChapterModel } from "./models/Chapter.model";
 
-import { BookList, BookListProps } from "./BookList";
-import { Info } from "./Infor";
-import { helper, withContainer } from "./helper";
-import { control } from "./controller";
-import { downloader } from "./Downloader";
+import { BookList, BookListProps } from "./widgets/BookList";
+import { Info } from "./widgets/Infor";
+import { ConfigForm } from "./widgets/ConfigForm";
+import { defaultConfig, getActiveConfig } from "./config";
+import { helper, withContainer } from "./utils/helpers";
+import { control } from "./utils/controller";
+import { downloader } from "./utils/Downloader";
 import { AsyncDialogContainer, useConfirmDialog } from "widgets/AsyncDialog";
 
 type CacheItem = BookListProps | Promise<DownloadDataProps>;
@@ -56,58 +59,69 @@ const confirmUnblock = {
 function BookDownloader() {
   const [props, setProps] = useState<BookListProps>();
   const [image, setImage] = useState<Blob>();
+  const [domain, setDomain] = useState<string>("");
   const confirmDialog = useConfirmDialog();
 
   useEffect(() => {
     const handle = (e: KeyboardEvent) => {
-      if (e.keyCode === 27) control.closeModal();
+      if (e.key === "Escape" && !e.defaultPrevented) {
+        control.closeModal();
+      }
     };
-    document.addEventListener("keydown", handle);
-    return () => {
-      document.removeEventListener("keydown", handle);
-    };
+    window.addEventListener("keydown", handle);
+    return () => window.removeEventListener("keydown", handle);
   }, [confirmDialog]);
 
   useEffect(() => {
-    return control.effect("initialize", async ({ href }: { href: string }) => {
-      let item = cacheData[href];
-      window.focus();
-      if (!item) {
-        setProps(undefined);
-        item = cacheData[href] = control.request(href);
-      }
+    return control.effect(
+      "BookDownloader-open",
+      async ({ href }: { href: string }) => {
+        console.log("BookDownloader-open", href);
+        let item = cacheData[href];
+        window.focus();
 
-      if (item instanceof Promise) {
-        const data: DownloadDataProps = await item;
-        const { info, chapters, maxChunks = 5 } = data;
-        let { image = "link" } = data;
-        downloader.maxChunks = maxChunks;
-        let cover;
-        if (image === "download") {
-          do {
-            cover = (await helper.imageToBlob(info.cover)) ?? undefined;
-          } while (!cover && (await confirmDialog(confirmUnblock)));
-          if (!cover) {
-            cover = await helper.noCors(info.cover, helper.imageToBlob);
-            image = "embed";
-          }
-        } else {
-          cover = await helper.noCors(info.cover, (img) =>
-            helper.imageToBlob(img, "image/jpeg")
-          );
+        const urlObj = new URL(href);
+        setDomain(urlObj.hostname);
+
+        if (!item) {
+          setProps(undefined);
+          const activeConfig = getActiveConfig(urlObj.hostname);
+          item = cacheData[href] = control.request("initialize", {
+            href,
+            config: activeConfig,
+          });
         }
 
-        info.description = helper.cleanHTML(info.description ?? "");
-        item = cacheData[href] = {
-          info: { ...info, cover, href: href },
-          chapters: chapters.map((chap, index) => {
-            return new ChapterModel(chap, image);
-          }),
-        };
-      }
+        if (item instanceof Promise) {
+          const data: DownloadDataProps = await item;
+          const { info, chapters, maxChunks = 5 } = data;
+          let { image = "link" } = data;
+          downloader.maxChunks = maxChunks;
+          let cover;
+          if (image === "download") {
+            do {
+              cover = (await helper.imageToBlob(info.cover)) ?? undefined;
+            } while (!cover && (await confirmDialog(confirmUnblock)));
+            if (!cover) {
+              cover = await helper.noCors(info.cover, helper.imageToBlob);
+              image = "embed";
+            }
+          } else {
+            cover = await helper.noCors(info.cover, (img: string) =>
+              helper.imageToBlob(img, "image/jpeg"),
+            );
+          }
 
-      setProps(item);
-    });
+          info.description = helper.cleanHTML(info.description ?? "");
+          item = cacheData[href] = {
+            info: { ...info, cover, href: href },
+            chapters: chapters.map((chap) => new ChapterModel(chap, image)),
+          };
+        }
+
+        setProps(item);
+      },
+    );
   }, [confirmDialog]);
 
   return (
@@ -133,15 +147,26 @@ function BookDownloader() {
           elevation={3}
           sx={{
             maxWidth: "100%",
-            width: 600,
+            width: 1000,
             marginX: "auto",
             position: "relative",
             boxSizing: "border-box",
-            minHeight: { xs: "100%", md: 300 },
+            minHeight: { xs: "100%", md: 400 },
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <AppBar position="sticky">
             <Toolbar variant="dense">
+              <Typography
+                variant="subtitle1"
+                whiteSpace="nowrap"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                sx={{ width: "35%" }}
+              >
+                Config Selectors
+              </Typography>
               <Typography
                 variant="subtitle1"
                 component="div"
@@ -150,7 +175,7 @@ function BookDownloader() {
                 textOverflow="ellipsis"
                 sx={{ flexGrow: 1 }}
               >
-                {props?.info.title}
+                {props?.info.title || domain}
               </Typography>
 
               <IconButton onClick={control.closeModal} color="inherit">
@@ -159,23 +184,57 @@ function BookDownloader() {
             </Toolbar>
           </AppBar>
 
-          {props ? (
-            <>
-              <Info info={props.info} onImage={setImage} image={image} />
-              <BookList {...props} image={image} />
-            </>
-          ) : (
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-              }}
-            >
-              <CircularProgress />
-            </Box>
-          )}
+          <Box flex={1}>
+            <Grid container spacing={0} height="100%">
+              {/* Cột trái: Config Form */}
+              <Grid
+                item
+                xs={12}
+                md={4}
+                height={{ xs: "auto", md: "100%" }}
+                borderRight={{ xs: "none", md: "1px solid rgba(0,0,0,0.1)" }}
+              >
+                <ConfigForm
+                  onSave={() => {
+                    if (props?.info?.href) {
+                      delete cacheData[props.info.href];
+                      control.emit("BookDownloader-open", {
+                        href: props.info.href,
+                      });
+                    }
+                  }}
+                  domain={domain}
+                />
+              </Grid>
+
+              {/* Cột phải: Info & Chapter List */}
+              <Grid
+                item
+                xs={12}
+                md={8}
+                height={{ xs: "auto", md: "100%" }}
+                sx={{ overflowY: "auto", position: "relative", minHeight: 300 }}
+              >
+                {props ? (
+                  <>
+                    <Info info={props.info} onImage={setImage} image={image} />
+                    <BookList {...props} image={image} />
+                  </>
+                ) : (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  >
+                    <CircularProgress />
+                  </Box>
+                )}
+              </Grid>
+            </Grid>
+          </Box>
         </Paper>
       </Box>
     </Box>

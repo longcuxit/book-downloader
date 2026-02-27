@@ -1,5 +1,5 @@
-import { control } from "controller";
-import { downloader, DownloadStep } from "Downloader";
+import { control } from "utils/controller";
+import { downloader, DownloadStep } from "utils/Downloader";
 import { TreeNode } from "./TreeNode";
 import { final, getKeys } from "./helpers";
 export enum NetStatus {
@@ -32,7 +32,7 @@ const statKeys = getKeys(zeroStat);
 
 export class NetNode<
   C extends NetNode = any,
-  P extends NetNode = any
+  P extends NetNode = any,
 > extends TreeNode<C, P> {
   private _queries: DownloadStep[] = [];
 
@@ -102,12 +102,13 @@ export class NetNode<
   }
 
   async load() {
+    downloader.resume();
     const { _stat } = this;
     const queries = this._queries.map(async (query) => {
       try {
         this.statChange(
           _stat.idle ? NetStatus.idle : NetStatus.error,
-          NetStatus.waiting
+          NetStatus.waiting,
         );
         await downloader.add(query);
       } catch (error: any) {

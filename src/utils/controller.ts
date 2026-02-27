@@ -1,4 +1,4 @@
-import { ChapterProps } from "./models/Chapter.model";
+import { ChapterProps } from "../models/Chapter.model";
 
 class EventEmitter {
   private _listeners: Record<string, ((...args: any[]) => void)[]> = {};
@@ -81,7 +81,7 @@ class Controller extends EventEmitter {
 
   effect(
     eventName: string | symbol,
-    listener: (...args: any[]) => void
+    listener: (...args: any[]) => void,
   ): () => void {
     this.on(eventName, listener);
     return () => this.off(eventName, listener);
