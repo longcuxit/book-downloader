@@ -20,7 +20,7 @@ Trình cắm (Userscript) hỗ trợ tải truyện từ các website đọc tru
 
 Sau khi cài đặt thành công `Tampermonkey`, chỉ cần nhấp vào liên kết bên dưới để cài đặt script sử dụng chung:
 
-**[Cài Đặt BookDownloader (Bản mới)](https://longcuxit.github.io/book-downloader/build/static/install.user.js)**
+**[Cài Đặt BookDownloader (Bản mới)](https://longcuxit.github.io/book-downloader/static/install.user.js)**
 
 (Thay thế cho các script riêng lẻ trước đây như `metruyencv.com`, `nettruyen.mobi`, `wattpad.vn`, v.v...)
 

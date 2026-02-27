@@ -34,7 +34,7 @@
   "use strict";
   const container = document.querySelector(".frmgoto .clearfix");
   if (!container) return;
-  await import("http://localhost:3000" + "/static/client.js");
+  await import("{VITE_APP_URL}/static/client.js");
 
   const { render, _ } = BookDownloader;
   const button = render(container, {});
