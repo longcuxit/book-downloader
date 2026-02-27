@@ -5,30 +5,19 @@
 // @description  Tải truyện từ các website sau đó nén thành định dạng epub.
 // @version      1.1
 // @author       HoangLong
-// @oujs:author  longcuxit
 // @match        https://metruyenchu.com.vn/*
+// @match        https://metruyencv.com/*
+// @match        https://metruyenchu.net/*
+// @match        https://nettruyen.mobi/*
+// @match        https://truyen.tangthuvien.vn/*
+// @match        https://m.truyen.tangthuvien.vn/*
+// @match        https://truyenfull.vn/*
+// @match        https://wattpad.vn/*
+// @match        https://dtruyen.com/*
 // @connect      self
 // @run-at       document-idle
 // @noframes
 // ==/UserScript==
-
-/**
-
-  interface Chapter {
-    title: string
-    url: string
-  }
-
-  interface Info {
-    i18n: string;
-    title: string;
-    author: string;
-    publisher: string;
-    cover?: string;
-    description?: string;
-    tags?: string[];
-  }
-*/
 
 (async () => {
   "use strict";
