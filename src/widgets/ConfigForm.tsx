@@ -39,6 +39,8 @@ export const ConfigForm = ({
       newConfig.chapterListScript = value;
     } else if (section === "chapterDetail") {
       newConfig.chapterDetail = value;
+    } else if (section === "chapterDetailScript") {
+      newConfig.chapterDetailScript = value;
     } else {
       (newConfig as any)[section][key] = value;
     }
@@ -107,16 +109,24 @@ export const ConfigForm = ({
         <Typography variant="subtitle2" gutterBottom>
           Chapter Content
         </Typography>
-        <TextField
-          label="chapterDetail"
-          value={config.chapterDetail || ""}
-          onChange={(e) =>
-            handleChange("chapterDetail", "chapterDetail", e.target.value)
-          }
-          size="small"
-          fullWidth
-          variant="outlined"
-        />
+        <Box mb={2} display="flex" gap={1}>
+          <TextField
+            label="chapterDetail"
+            value={config.chapterDetail || ""}
+            onChange={(e) =>
+              handleChange("chapterDetail", "chapterDetail", e.target.value)
+            }
+            size="small"
+            fullWidth
+            variant="outlined"
+          />
+          <EditScriptButton
+            value={config.chapterDetailScript || ""}
+            onChange={(v) =>
+              handleChange("chapterDetailScript", "chapterDetailScript", v)
+            }
+          />
+        </Box>
       </Box>
       <Box
         p={2}

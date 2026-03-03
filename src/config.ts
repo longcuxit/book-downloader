@@ -9,6 +9,7 @@ export interface SelectorConfig {
   chapterList: string;
   chapterListScript: string;
   chapterDetail: string;
+  chapterDetailScript?: string;
 }
 
 export interface ConfigMap {
@@ -170,6 +171,7 @@ export const emptyConfig: SelectorConfig = {
   chapterList: "",
   chapterListScript: "",
   chapterDetail: "",
+  chapterDetailScript: "",
 };
 
 export const getActiveConfig = (domain: string): SelectorConfig => {
