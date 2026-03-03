@@ -53,7 +53,7 @@ export class NetNode<
     return this._composed;
   }
 
-  private compose() {
+  protected compose() {
     const { _stat, _composed } = this;
     const total = statKeys.reduce((total, key) => total + _stat[key], 0);
 

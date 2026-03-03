@@ -24,6 +24,7 @@ import { helper, withContainer } from "./utils/helpers";
 import { control } from "./utils/controller";
 import { downloader } from "./utils/Downloader";
 import { AsyncDialogContainer, useConfirmDialog } from "widgets/AsyncDialog";
+import { cacheDB } from "utils/CacheDB";
 
 type CacheItem = BookListProps | Promise<DownloadDataProps>;
 
@@ -113,9 +114,17 @@ function BookDownloader() {
           }
 
           info.description = helper.cleanHTML(info.description ?? "");
+          const bookId = helper.hashString(href);
+          const downloaded = await cacheDB.getAll(bookId);
           item = cacheData[href] = {
             info: { ...info, cover, href: href },
-            chapters: chapters.map((chap) => new ChapterModel(chap, image)),
+            chapters: chapters.map((chap) => {
+              let content: string | undefined;
+              if (chap.url) {
+                content = downloaded.get(helper.hashString(chap.url))?.content;
+              }
+              return new ChapterModel({ ...chap, bookId, content }, image);
+            }),
           };
         }
 

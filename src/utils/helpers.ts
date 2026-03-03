@@ -59,13 +59,13 @@ export const helper = {
   hashString(value: string) {
     let hash = 0;
     let chr: number;
-    if (value.length === 0) return hash;
+    if (value.length === 0) return hash.toString(16).toString();
     for (let i = 0; i < value.length; i++) {
       chr = value.charCodeAt(i);
       hash = (hash << 5) - hash + chr;
       hash |= 0;
     }
-    return hash.toString(16);
+    return hash.toString(16).toString();
   },
 
   imageToBlob(src: string, type: string = "image/webp") {
