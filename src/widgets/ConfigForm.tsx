@@ -33,17 +33,7 @@ export const ConfigForm = ({
   ) => {
     if (!config) return;
     const newConfig = { ...config };
-    if (section === "chapterList") {
-      newConfig.chapterList = value;
-    } else if (section === "chapterListScript") {
-      newConfig.chapterListScript = value;
-    } else if (section === "chapterDetail") {
-      newConfig.chapterDetail = value;
-    } else if (section === "chapterDetailScript") {
-      newConfig.chapterDetailScript = value;
-    } else {
-      (newConfig as any)[section][key] = value;
-    }
+    (newConfig as any)[section][key] = value;
     setConfig(newConfig);
   };
 
@@ -90,19 +80,15 @@ export const ConfigForm = ({
         <Box mb={2} display="flex" gap={1}>
           <TextField
             label="chapterList"
-            value={config.chapterList || ""}
-            onChange={(e) =>
-              handleChange("chapterList", "chapterList", e.target.value)
-            }
+            value={config.chapter?.list || ""}
+            onChange={(e) => handleChange("chapter", "list", e.target.value)}
             size="small"
             fullWidth
             variant="outlined"
           />
           <EditScriptButton
-            value={config.chapterListScript || ""}
-            onChange={(v) =>
-              handleChange("chapterListScript", "chapterListScript", v)
-            }
+            value={config.chapter?.listScript || ""}
+            onChange={(v) => handleChange("chapter", "listScript", v)}
           />
         </Box>
 
@@ -112,19 +98,15 @@ export const ConfigForm = ({
         <Box mb={2} display="flex" gap={1}>
           <TextField
             label="chapterDetail"
-            value={config.chapterDetail || ""}
-            onChange={(e) =>
-              handleChange("chapterDetail", "chapterDetail", e.target.value)
-            }
+            value={config.chapter?.content || ""}
+            onChange={(e) => handleChange("chapter", "content", e.target.value)}
             size="small"
             fullWidth
             variant="outlined"
           />
           <EditScriptButton
-            value={config.chapterDetailScript || ""}
-            onChange={(v) =>
-              handleChange("chapterDetailScript", "chapterDetailScript", v)
-            }
+            value={config.chapter?.contentScript || ""}
+            onChange={(v) => handleChange("chapter", "contentScript", v)}
           />
         </Box>
       </Box>

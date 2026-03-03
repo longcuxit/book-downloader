@@ -6,10 +6,7 @@ export interface SelectorConfig {
     cover: string;
     tags: string;
   };
-  chapterList: string;
-  chapterListScript: string;
-  chapterDetail: string;
-  chapterDetailScript?: string;
+  chapter: { list: string; listScript: string; content: string; contentScript: string }
 }
 
 export interface ConfigMap {
@@ -28,9 +25,7 @@ export const defaultConfig: ConfigMap = {
         cover: ".thumb img.cover",
         tags: ".infos .story_categories a",
       },
-      chapterList: "#chapters .chapters a",
-      chapterListScript: "",
-      chapterDetail: "#chapter-content",
+      chapter: { list: "#chapters .chapters a", listScript: "", content: "#chapter-content", contentScript: "" },
     },
     "m.truyen.tangthuvien.vn": {
       info: {
@@ -40,9 +35,7 @@ export const defaultConfig: ConfigMap = {
         cover: ".book-detail>img",
         tags: ".tag-list > a",
       },
-      chapterList: ".body-container .chapters:last-child a",
-      chapterListScript: "",
-      chapterDetail: ".chap-c",
+      chapter: { list: ".body-container .chapters:last-child a", listScript: "", content: ".chap-c", contentScript: "" },
     },
     "metruyenchu.com.vn": {
       info: {
@@ -52,8 +45,7 @@ export const defaultConfig: ConfigMap = {
         cover: ".book-3d img",
         tags: ".book-info-text a[href*=the-loai]",
       },
-      chapterList: ".clearfix a",
-      chapterListScript: `
+      chapter: { list: ".clearfix a", listScript: `
 const baseUrl = window.location.origin;
 const bookId = rid
 const numChapters = +_.query('.book-info-text li:nth-child(3)').childNodes[1].textContent
@@ -82,8 +74,7 @@ while (page <= maxPage) {
   page++;
 }
 return chapters;
-      `,
-      chapterDetail: ".truyen",
+      `, content: ".truyen", contentScript: "" },
     },
     "nettruyen.mobi": {
       info: {
@@ -93,9 +84,7 @@ return chapters;
         cover: ".info-image img",
         tags: ".list-info .info-item:nth-child(3) .info-content, .list-info .info-item:nth-child(4) a",
       },
-      chapterList: ".list-chapters .chapter a",
-      chapterListScript: "",
-      chapterDetail: ".reading-content",
+      chapter: { list: ".list-chapters .chapter a", listScript: "", content: ".reading-content", contentScript: "" },
     },
     "truyen.tangthuvien.vn": {
       info: {
@@ -105,9 +94,7 @@ return chapters;
         cover: "#bookImg>img",
         tags: ".book-info > .tag > *, .book-state li.tags .tag-wrap > *",
       },
-      chapterList: "ul a",
-      chapterListScript: "",
-      chapterDetail: ".box-chap",
+      chapter: { list: "ul a", listScript: "", content: ".box-chap", contentScript: "" },
     },
     "truyenfull.vn": {
       info: {
@@ -117,9 +104,7 @@ return chapters;
         cover: ".book>img",
         tags: "",
       },
-      chapterList: ".list-chapter a",
-      chapterListScript: "",
-      chapterDetail: "#chapter-c",
+      chapter: { list: ".list-chapter a", listScript: "", content: "#chapter-c", contentScript: "" },
     },
     "wattpad.vn": {
       info: {
@@ -129,9 +114,7 @@ return chapters;
         cover: "img.scover",
         tags: ".info p:nth-child(2) > a",
       },
-      chapterList: ".list-chap a",
-      chapterListScript: "",
-      chapterDetail: ".container1 > p",
+      chapter: { list: ".list-chap a", listScript: "", content: ".container1 > p", contentScript: "" },
     },
     default: {
       info: {
@@ -141,9 +124,7 @@ return chapters;
         cover: ".cover img",
         tags: ".tags a",
       },
-      chapterList: ".chapter-list a",
-      chapterListScript: "",
-      chapterDetail: "#chapter-content",
+      chapter: { list: ".chapter-list a", listScript: "", content: "#chapter-content", contentScript: "" },
     },
   },
 };
@@ -168,10 +149,7 @@ export const emptyConfig: SelectorConfig = {
     cover: "",
     tags: "",
   },
-  chapterList: "",
-  chapterListScript: "",
-  chapterDetail: "",
-  chapterDetailScript: "",
+  chapter: { list: "", listScript: "", content: "", contentScript: "" },
 };
 
 export const getActiveConfig = (domain: string): SelectorConfig => {

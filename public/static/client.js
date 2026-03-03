@@ -52,7 +52,7 @@ window.BookDownloader = ((publicUrl) => {
   const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
   const getChapterList = async (doc, conf) => {
     let chapters = [];
-    const script = conf.chapterListScript;
+    const script = conf.chapter.listScript;
     if (script) {
       try {
         const scriptFunc = new AsyncFunction("doc", "_", script);
@@ -63,7 +63,7 @@ window.BookDownloader = ((publicUrl) => {
       }
     }
 
-    chapters = _.queryAll(conf.chapterList, doc).map((el) => ({
+    chapters = _.queryAll(conf.chapter.list, doc).map((el) => ({
       title: el.innerText.trim(),
       url: el.href,
     }));
@@ -104,13 +104,13 @@ window.BookDownloader = ((publicUrl) => {
           fetchChapter = async (chapProps) => {
             const html = await fetch(chapProps.url).then((res) => res.text());
             const doc = _.stringToDom(html);
-            if (config.chapterDetailScript) {
+            if (config.chapter.contentScript) {
               try {
                 const scriptFunc = new AsyncFunction(
                   "doc",
                   "chapProps",
                   "_",
-                  config.chapterDetailScript,
+                  config.chapter.contentScript,
                 );
                 const content = await scriptFunc(doc, chapProps, _);
                 return content;
@@ -118,7 +118,7 @@ window.BookDownloader = ((publicUrl) => {
                 console.error("Error executing chapterDetailScript:", err);
               }
             }
-            const content = _.query(config.chapterDetail, doc);
+            const content = _.query(config.chapter.content, doc);
             if (content) return content.outerHTML;
             return html;
           };
