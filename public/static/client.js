@@ -104,20 +104,6 @@ window.BookDownloader = ((publicUrl) => {
           fetchChapter = async (chapProps) => {
             const html = await fetch(chapProps.url).then((res) => res.text());
             const doc = _.stringToDom(html);
-            if (config.chapter.contentScript) {
-              try {
-                const scriptFunc = new AsyncFunction(
-                  "doc",
-                  "chapProps",
-                  "_",
-                  config.chapter.contentScript,
-                );
-                const content = await scriptFunc(doc, chapProps, _);
-                return content;
-              } catch (err) {
-                console.error("Error executing chapterDetailScript:", err);
-              }
-            }
             const content = _.query(config.chapter.content, doc);
             if (content) return content.outerHTML;
             return html;

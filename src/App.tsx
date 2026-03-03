@@ -84,9 +84,9 @@ function BookDownloader() {
         const urlObj = new URL(href);
         setDomain(urlObj.hostname);
 
+        const activeConfig = getActiveConfig(urlObj.hostname);
         if (!item) {
           setProps(undefined);
-          const activeConfig = getActiveConfig(urlObj.hostname);
           item = cacheData[href] = control.request("initialize", {
             href,
             config: activeConfig,
@@ -121,6 +121,7 @@ function BookDownloader() {
           const downloaded = await cacheDB.getAll(bookId);
           item = cacheData[href] = {
             info: { ...info, cover, href: href },
+            contentScript: activeConfig.chapter.contentScript,
             chapters: chapters.map((chap) => {
               let content: string | undefined;
               if (chap.url) {

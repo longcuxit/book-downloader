@@ -1,16 +1,33 @@
 import { saveAs } from "file-saver";
 import { helper } from "../utils/helpers";
 
-import { ChapterModel } from "./Chapter.model";
+import { ChapterModel, ChapterProps } from "./Chapter.model";
 import { ChapterListModel } from "./ChapterList.model";
 
 export class BookModel extends ChapterListModel {
   private file: any;
+
+  formatContent: (content: string, props: ChapterProps) => string;
+
   constructor(
     public info: BookInfo,
     chapters: ChapterModel[],
+    contentScript: string,
   ) {
     super();
+
+    const scriptFunc = new Function("content", "chapProps", "_", contentScript);
+    this.formatContent = (content: string, props: ChapterProps) => {
+      if (!contentScript) return content;
+      try {
+        const newContent = scriptFunc(content, props, helper);
+        return newContent as string;
+      } catch (err) {
+        console.error("Error executing contentScript:", err);
+      }
+      return content;
+    };
+
     this.add(...chapters);
   }
 
@@ -30,6 +47,7 @@ export class BookModel extends ChapterListModel {
         description: `<br/>${info.description}`,
       });
       this.children.forEach(({ props, content, children }) => {
+        content = this.formatContent(content || "", props);
         children.forEach(({ id, source }) => {
           if (source instanceof Blob) epub.image(source, id);
         });

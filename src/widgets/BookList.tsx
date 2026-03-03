@@ -69,9 +69,15 @@ export interface BookListProps {
   chapters: ChapterModel[];
   info: BookInfo;
   image?: Blob;
+  contentScript: string;
 }
 
-export const BookList = ({ chapters, info, image }: BookListProps) => {
+export const BookList = ({
+  chapters,
+  info,
+  image,
+  contentScript,
+}: BookListProps) => {
   const [config, setConfig] = useState({ skip: 0, split: 10000 });
 
   const [books, setBooks] = useState<BookModel[]>([]);
@@ -90,7 +96,11 @@ export const BookList = ({ chapters, info, image }: BookListProps) => {
           ...info,
           title: `${info.title} (${bookStart + 1}-${end})`,
         };
-        const book = new BookModel(bookInfo, chapters.slice(bookStart, end));
+        const book = new BookModel(
+          bookInfo,
+          chapters.slice(bookStart, end),
+          contentScript,
+        );
         books.push(book);
       }
       start += split;

@@ -6,7 +6,12 @@ export interface SelectorConfig {
     cover: string;
     tags: string;
   };
-  chapter: { list: string; listScript: string; content: string; contentScript: string }
+  chapter: {
+    list: string;
+    listScript: string;
+    content: string;
+    contentScript: string;
+  };
 }
 
 export interface ConfigMap {
@@ -25,7 +30,12 @@ export const defaultConfig: ConfigMap = {
         cover: ".thumb img.cover",
         tags: ".infos .story_categories a",
       },
-      chapter: { list: "#chapters .chapters a", listScript: "", content: "#chapter-content", contentScript: "" },
+      chapter: {
+        list: "#chapters .chapters a",
+        listScript: "",
+        content: "#chapter-content",
+        contentScript: "",
+      },
     },
     "m.truyen.tangthuvien.vn": {
       info: {
@@ -35,7 +45,12 @@ export const defaultConfig: ConfigMap = {
         cover: ".book-detail>img",
         tags: ".tag-list > a",
       },
-      chapter: { list: ".body-container .chapters:last-child a", listScript: "", content: ".chap-c", contentScript: "" },
+      chapter: {
+        list: ".body-container .chapters:last-child a",
+        listScript: "",
+        content: ".chap-c",
+        contentScript: "",
+      },
     },
     "metruyenchu.com.vn": {
       info: {
@@ -45,7 +60,9 @@ export const defaultConfig: ConfigMap = {
         cover: ".book-3d img",
         tags: ".book-info-text a[href*=the-loai]",
       },
-      chapter: { list: ".clearfix a", listScript: `
+      chapter: {
+        list: ".clearfix a",
+        listScript: `
 const baseUrl = window.location.origin;
 const bookId = rid
 const numChapters = +_.query('.book-info-text li:nth-child(3)').childNodes[1].textContent
@@ -74,7 +91,51 @@ while (page <= maxPage) {
   page++;
 }
 return chapters;
-      `, content: ".truyen", contentScript: "" },
+      `,
+        content: ".truyen",
+        contentScript: "",
+      },
+    },
+    "tangthuvien.top": {
+      info: {
+        title: ".book-info > h1",
+        author: ".tag > a[href*=tac-gia]",
+        description: ".book-intro > p",
+        cover: "#bookImg>img",
+        tags: ".book-info > .tag > *, .book-state li.tags .tag-wrap > *",
+      },
+      chapter: {
+        list: "ul a",
+        listScript: `
+const baseUrl = window.location.origin;
+const bookId = document.querySelector('[name="book_detail"]').content
+if (!bookId) return [];
+
+const chapters = [];
+const url = \`\${baseUrl}/doc-truyen/page/\${bookId}?page=0&limit=10000&web=1\`;
+const response = await fetch(url);
+if (!response.ok) return [];
+
+const html = await response.text();
+if (!html || html.trim() === "" || html.includes('Không có dữ liệu') || !html.includes('<li')) return [];
+
+const div = _.stringToDom(html);
+const aTags = Array.from(div.querySelectorAll("ul.cf a"));
+
+aTags.forEach((aTag) => {
+  const href = aTag.getAttribute("href");
+  if (href && !href.includes("javascript")) {
+    chapters.push({
+      title: aTag.innerText.trim(),
+      url: href.startsWith("http") ? href : baseUrl + href,
+    });
+  }
+});
+return chapters
+      `,
+        content: ".box-chap",
+        contentScript: "return content.replace(/\n/gi, '<br/>')",
+      },
     },
     "nettruyen.mobi": {
       info: {
@@ -84,7 +145,12 @@ return chapters;
         cover: ".info-image img",
         tags: ".list-info .info-item:nth-child(3) .info-content, .list-info .info-item:nth-child(4) a",
       },
-      chapter: { list: ".list-chapters .chapter a", listScript: "", content: ".reading-content", contentScript: "" },
+      chapter: {
+        list: ".list-chapters .chapter a",
+        listScript: "",
+        content: ".reading-content",
+        contentScript: "",
+      },
     },
     "truyen.tangthuvien.vn": {
       info: {
@@ -94,7 +160,12 @@ return chapters;
         cover: "#bookImg>img",
         tags: ".book-info > .tag > *, .book-state li.tags .tag-wrap > *",
       },
-      chapter: { list: "ul a", listScript: "", content: ".box-chap", contentScript: "" },
+      chapter: {
+        list: "ul a",
+        listScript: "",
+        content: ".box-chap",
+        contentScript: "",
+      },
     },
     "truyenfull.vn": {
       info: {
@@ -104,7 +175,12 @@ return chapters;
         cover: ".book>img",
         tags: "",
       },
-      chapter: { list: ".list-chapter a", listScript: "", content: "#chapter-c", contentScript: "" },
+      chapter: {
+        list: ".list-chapter a",
+        listScript: "",
+        content: "#chapter-c",
+        contentScript: "",
+      },
     },
     "wattpad.vn": {
       info: {
@@ -114,7 +190,12 @@ return chapters;
         cover: "img.scover",
         tags: ".info p:nth-child(2) > a",
       },
-      chapter: { list: ".list-chap a", listScript: "", content: ".container1 > p", contentScript: "" },
+      chapter: {
+        list: ".list-chap a",
+        listScript: "",
+        content: ".container1 > p",
+        contentScript: "",
+      },
     },
     default: {
       info: {
@@ -124,7 +205,12 @@ return chapters;
         cover: ".cover img",
         tags: ".tags a",
       },
-      chapter: { list: ".chapter-list a", listScript: "", content: "#chapter-content", contentScript: "" },
+      chapter: {
+        list: ".chapter-list a",
+        listScript: "",
+        content: "#chapter-content",
+        contentScript: "",
+      },
     },
   },
 };

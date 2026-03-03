@@ -101,19 +101,17 @@ export const helper = {
   },
 
   cleanHTML(html: string, skip: string[] = []) {
-    skip = skip.flatMap((tag) => [`<${tag}`, `</${tag}>`]);
+    skip = [...skip, "br", "p", "div", "span"].flatMap((tag) => [
+      `<${tag}`,
+      `</${tag}>`,
+    ]);
 
     html = html.replace(/<[^>]*>/gi, (match) => {
       if (skip.find((tag) => match.startsWith(tag))) {
         return match;
       }
-      return "<br/>";
+      return "";
     });
-    html = html.replace(/>( |\n|\t)+</gi, "><");
-    html = html.replace(/(<br\/>)+/gi, "<br/><br/>");
-    html = html.replace(/^(<br\/>)+/gi, "<p>");
-    html = html.replace(/(<br\/>)+$/gi, "</p>");
-    html = html.replaceAll("<br/><br/>", "</p><p>");
     return html;
   },
 };

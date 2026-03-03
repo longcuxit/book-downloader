@@ -80,14 +80,14 @@ export const ConfigForm = ({
         <Box mb={2} display="flex" gap={1}>
           <TextField
             label="chapterList"
-            value={config.chapter?.list || ""}
+            value={config.chapter.list}
             onChange={(e) => handleChange("chapter", "list", e.target.value)}
             size="small"
             fullWidth
             variant="outlined"
           />
           <EditScriptButton
-            value={config.chapter?.listScript || ""}
+            value={config.chapter.listScript}
             onChange={(v) => handleChange("chapter", "listScript", v)}
           />
         </Box>
@@ -98,14 +98,14 @@ export const ConfigForm = ({
         <Box mb={2} display="flex" gap={1}>
           <TextField
             label="chapterDetail"
-            value={config.chapter?.content || ""}
+            value={config.chapter.content}
             onChange={(e) => handleChange("chapter", "content", e.target.value)}
             size="small"
             fullWidth
             variant="outlined"
           />
           <EditScriptButton
-            value={config.chapter?.contentScript || ""}
+            value={config.chapter.contentScript}
             onChange={(v) => handleChange("chapter", "contentScript", v)}
           />
         </Box>
