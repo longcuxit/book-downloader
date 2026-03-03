@@ -134,7 +134,7 @@ aTags.forEach((aTag) => {
 return chapters
       `,
         content: ".box-chap",
-        contentScript: "return content.replace(/\n/gi, '<br/>')",
+        contentScript: "return content.replace(/\\n/gi, '<br/>')",
       },
     },
     "nettruyen.mobi": {
