@@ -104,11 +104,14 @@ function BookDownloader() {
               cover = (await helper.imageToBlob(info.cover)) ?? undefined;
             } while (!cover && (await confirmDialog(confirmUnblock)));
             if (!cover) {
-              cover = await helper.noCors(info.cover, helper.imageToBlob);
+              cover = await helper.getClientImage(
+                info.cover,
+                helper.imageToBlob,
+              );
               image = "embed";
             }
           } else {
-            cover = await helper.noCors(info.cover, (img: string) =>
+            cover = await helper.getClientImage(info.cover, (img: string) =>
               helper.imageToBlob(img, "image/jpeg"),
             );
           }

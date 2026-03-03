@@ -29,6 +29,7 @@ export const getLast = <T>(arr: T[]): T | undefined => arr[arr.length - 1];
 export const getKeys = Object.keys as <T extends object>(obj: T) => (keyof T)[];
 
 import { ComponentType, createElement, ReactElement, ReactNode } from "react";
+import { control } from "./controller";
 
 export const helper = {
   stringToDom(html: string, selector?: string) {
@@ -38,22 +39,20 @@ export const helper = {
     return selector ? div.querySelector(selector) : div;
   },
 
-  async noCors(
+  async getClientImage(
     src: string,
     transfer: (url: string) => Promise<Blob | undefined>,
   ) {
-    const urls: string[] = [
-      `https://api.codetabs.com/v1/proxy/?quest=${encodeURI(src)}`,
-      `https://cors-anywhere.herokuapp.com/${src}`,
-    ];
-
-    for await (const url of urls) {
-      try {
-        const blob = await transfer(url);
-        if (blob) return blob;
-      } catch (error) {
-        console.log(error);
+    try {
+      const blob = await control.fetch(src);
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        const result = await transfer(url);
+        URL.revokeObjectURL(url);
+        return result;
       }
+    } catch (error) {
+      console.log(error);
     }
   },
   hashString(value: string) {
