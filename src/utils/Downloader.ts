@@ -21,11 +21,6 @@ class Downloader {
   }
 
   async add(step: DownloadStep) {
-    if (!window.onbeforeunload) {
-      window.onbeforeunload = function () {
-        return "Are you sure cancel all download!...";
-      };
-    }
     const query = new Promise<void>((next, error) => {
       this.schedules.push([step, next, error]);
     });
