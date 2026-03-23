@@ -197,6 +197,51 @@ return chapters
         contentScript: "",
       },
     },
+    "www.tvtruyen.com": {
+      info: {
+        title: "h3.title",
+        author: "a[itemprop='author']",
+        description: ".limit-desc",
+        cover: "img[itemprop='image']",
+        tags: "a[itemprop='genre']",
+      },
+      chapter: {
+        list: ".list-chapter a",
+        listScript: `function getPages() {
+  const nav = doc?.querySelector('.custom-pagination-wrapper');
+  if (!nav) return 1;
+  const lastPage = nav.querySelector(".nav-next")?.previousElementSibling;
+  if (!lastPage) return 1;
+  return +lastPage.textContent;
+}
+
+function getItems(dom) {
+  const aTags = dom?.querySelectorAll('.list-chapter a');
+  return Array.from(aTags).map((a) => ({
+    title: a.textContent,
+    url: a.href,
+  }));
+}
+
+const bookUrl = location.pathname;
+const pages = getPages();
+if (pages === 1) {
+  return getItems(doc)
+} else {
+  const items = [];
+  for (let i = 1; i <= pages; i++) {
+    const url = bookUrl + '?page=' + i;
+    const res = await fetch(url);
+    const dom = _.stringToDom(await res.text());
+    items.push(...getItems(dom));
+  }
+  return items;
+}
+`,
+        content: "#chapter-content>:first-child",
+        contentScript: `return content.replaceAll(/<span class="signature">.*?<\\/span>/g, '')`,
+      },
+    },
     default: {
       info: {
         title: "h1",
